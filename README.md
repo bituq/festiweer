@@ -12,7 +12,7 @@ Levert een full-bleed A4 PDF op. De renderer leunt op de Puppeteer-install van d
 
 ## Data verversen
 
-De cijfers staan hardcoded in `poster.html`: de arrays `BEST`/`P10`/`P90` in de grafiek en de `GROOT`/`KLEIN` dagkaarten. Verse cijfers haal je zo op:
+De cijfers staan hardcoded in `poster.html`: `BEST`/`P10`/`P90` in de temperatuurgrafiek, `MED`/`P90` in de regengrafiek en de `GROOT`/`KLEIN` dagkaarten. Verse cijfers haal je zo op:
 
 ```sh
 curl "https://ensemble-api.open-meteo.com/v1/ensemble?latitude=52.437&longitude=5.763&daily=temperature_2m_max,precipitation_sum,wind_gusts_10m_max&models=ecmwf_ifs025,gfs05&timezone=Europe%2FAmsterdam&start_date=2026-08-19&end_date=2026-08-24"

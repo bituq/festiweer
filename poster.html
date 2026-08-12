@@ -30,24 +30,24 @@
   svg { display: block; }
 
   /* ---------- hero ---------- */
-  .hero { background: linear-gradient(180deg, var(--oranje) 0%, var(--oranje-diep) 100%); padding: 34px 44px 0; text-align: center; }
+  .hero { background: linear-gradient(180deg, var(--oranje) 0%, var(--oranje-diep) 100%); padding: 25px 44px 0; text-align: center; }
   .hero .boven { font-family: 'Silkscreen', monospace; font-weight: 400; font-size: 15px; color: var(--cream); letter-spacing: 1px; }
   .hero h1 {
-    font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 72px; line-height: 0.95;
+    font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 63px; line-height: 0.95;
     color: var(--paars); text-shadow: 5px 5px 0 var(--donkerpaars);
-    margin: 10px 0 14px;
+    margin: 8px 0 11px;
   }
   .hero .onder { font-family: 'Silkscreen', monospace; font-weight: 400; font-size: 12px; color: var(--cream); }
-  .spikes { width: 100%; height: 26px; margin-top: 18px; }
+  .spikes { width: 100%; height: 24px; margin-top: 13px; }
 
   /* ---------- verdict ---------- */
-  .verdict { background: var(--lila); padding: 20px 44px 22px; text-align: center; }
+  .verdict { background: var(--lila); padding: 15px 44px 17px; text-align: center; }
   .verdict .kop { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 21px; color: var(--rood); }
   .verdict p { margin: 9px auto 0; max-width: 168mm; font-size: 12px; line-height: 1.55; color: var(--ink); }
 
   /* ---------- paars blok met dagen ---------- */
-  .dagen { background: var(--paars); padding: 22px 40px 24px; }
-  .dagen h2 { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 17px; color: var(--cream); margin: 0 0 13px; text-align: center; }
+  .dagen { background: var(--paars); padding: 17px 40px 19px; }
+  .dagen h2 { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 17px; color: var(--cream); margin: 0 0 11px; text-align: center; }
   .dagen h2 em { font-style: normal; color: var(--mint); }
   .groot { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .kaart {
@@ -55,15 +55,15 @@
     padding: 13px 12px 12px; text-align: center;
   }
   .kaart .dag { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 15px; color: var(--rood); }
-  .kaart .icon { width: 54px; height: 46px; margin: 8px auto 2px; }
-  .kaart .temp { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 33px; color: var(--paars); line-height: 1; }
+  .kaart .icon { width: 48px; height: 41px; margin: 6px auto 2px; }
+  .kaart .temp { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 31px; color: var(--paars); line-height: 1; }
   .kaart .temp .gr { font-family: 'Schibsted Grotesk', sans-serif; font-weight: 700; font-size: 26px; vertical-align: 6px; }
   .kaart .nacht { font-size: 10.5px; color: var(--muted); margin-top: 3px; }
   .kaart .kans { font-size: 11px; font-weight: 700; margin-top: 9px; }
   .kaart .drops { margin-top: 6px; height: 14px; display: flex; justify-content: center; gap: 3px; }
   .kaart .zin { font-size: 10.5px; font-style: italic; margin-top: 6px; color: var(--ink); }
 
-  .dagen h3 { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 12px; color: var(--lila); margin: 18px 0 10px; text-align: center; }
+  .dagen h3 { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 12px; color: var(--lila); margin: 15px 0 9px; text-align: center; }
   .klein { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .strook {
     background: var(--lila-licht); border: 3px solid var(--donkerpaars); box-shadow: 4px 4px 0 var(--schaduw);
@@ -74,17 +74,18 @@
   .strook .feiten { font-size: 10px; font-weight: 700; margin-top: 1px; }
   .strook .zin { font-size: 9.5px; line-height: 1.35; margin-top: 2px; color: var(--ink); }
 
-  /* ---------- uitleg: warmte + mm ---------- */
-  .uitleg { padding: 20px 40px 6px; display: grid; grid-template-columns: 57% 43%; gap: 26px; flex: 1; }
-  .uitleg h2 { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 14px; color: var(--paars); margin: 0 0 4px; }
-  .uitleg .sub { font-size: 10.5px; color: var(--muted); margin: 0 0 8px; }
-  .mm-intro { font-size: 11px; font-weight: 700; margin: 2px 0 9px; }
-  .mm-rij { display: flex; align-items: center; gap: 9px; padding: 5.5px 0; border-top: 1.5px solid rgba(74,44,143,0.18); }
-  .mm-rij:last-of-type { border-bottom: 1.5px solid rgba(74,44,143,0.18); }
-  .mm-rij .dr { width: 58px; height: 15px; flex: none; }
-  .mm-rij .mm { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 11px; color: var(--paars); width: 64px; flex: none; white-space: nowrap; }
-  .mm-rij .txt { font-size: 10.5px; line-height: 1.3; }
-  .mm-slot { font-size: 10.5px; line-height: 1.45; margin-top: 9px; color: var(--ink); }
+  /* ---------- uitleg: twee grafieken + mm-strip ---------- */
+  .uitleg { padding: 15px 40px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .uitleg h2, .mmblok h2 { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 14px; color: var(--paars); margin: 0 0 4px; }
+  .uitleg .sub { font-size: 10.5px; line-height: 1.4; color: var(--muted); margin: 0 0 6px; }
+  .mmblok { padding: 12px 40px 6px; flex: 1; }
+  .mmblok .kopregel { display: flex; align-items: baseline; gap: 12px; }
+  .mm-intro { font-size: 10.5px; font-weight: 700; margin: 0; }
+  .mm-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 8px; }
+  .mm-item .kop { display: flex; align-items: center; gap: 7px; }
+  .mm-item .dr { width: 58px; height: 15px; flex: none; }
+  .mm-item .mm { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 11px; color: var(--paars); white-space: nowrap; }
+  .mm-item .txt { font-size: 10px; line-height: 1.35; margin-top: 4px; color: var(--ink); }
 
   /* ---------- footer ---------- */
   .voet-spikes { width: 100%; height: 22px; display: block; }
@@ -120,17 +121,25 @@
     <div>
       <h2>HOE WARM WORDT HET?</h2>
       <p class="sub">De rode lijn is de beste schatting. Het paarse vlak laat zien hoe ver de 82 berekeningen uit elkaar liggen: daarbinnen kan het nog alle kanten op.</p>
-      <svg id="tempChart" viewBox="0 0 420 218"></svg>
+      <svg id="tempChart" viewBox="0 0 420 196"></svg>
     </div>
     <div>
+      <h2>HOEVEEL REGEN PER DAG?</h2>
+      <p class="sub">De balk is de verwachting, het streepje erboven de tegenvaller: 1 op de 10 berekeningen komt daar nog boven. Wat die millimeters betekenen zie je onderaan.</p>
+      <svg id="rainChart" viewBox="0 0 420 196"></svg>
+    </div>
+  </div>
+
+  <div class="mmblok">
+    <div class="kopregel">
       <h2>HOEVEEL IS 1 MM REGEN?</h2>
       <p class="mm-intro">1 millimeter = 1 liter water op elke vierkante meter.</p>
-      <div class="mm-rij"><svg class="dr" data-n="1" viewBox="0 0 58 15"></svg><span class="mm">1 MM</span><span class="txt">een spatje, merk je amper</span></div>
-      <div class="mm-rij"><svg class="dr" data-n="2" viewBox="0 0 58 15"></svg><span class="mm">2 MM</span><span class="txt">een buitje, vijf minuten schuilen</span></div>
-      <div class="mm-rij"><svg class="dr" data-n="3" viewBox="0 0 58 15"></svg><span class="mm">5 MM</span><span class="txt">een stevige bui, poncho aan</span></div>
-      <div class="mm-rij"><svg class="dr" data-n="4" viewBox="0 0 58 15"></svg><span class="mm">10+ MM</span><span class="txt">laarzenweer, modder op de camping</span></div>
-      <p class="mm-slot">Woensdag is de natste dag: rond de 3 mm, met uitschieters naar 12.
-      De festivaldagen zelf blijven meestal onder de 2 mm: hooguit een buitje dus.</p>
+    </div>
+    <div class="mm-grid">
+      <div class="mm-item"><div class="kop"><svg class="dr" data-n="1" viewBox="0 0 58 15"></svg><span class="mm">1 MM</span></div><div class="txt">een spatje, merk je amper</div></div>
+      <div class="mm-item"><div class="kop"><svg class="dr" data-n="2" viewBox="0 0 58 15"></svg><span class="mm">2 MM</span></div><div class="txt">een buitje, vijf minuten schuilen</div></div>
+      <div class="mm-item"><div class="kop"><svg class="dr" data-n="3" viewBox="0 0 58 15"></svg><span class="mm">5 MM</span></div><div class="txt">een stevige bui, poncho aan</div></div>
+      <div class="mm-item"><div class="kop"><svg class="dr" data-n="4" viewBox="0 0 58 15"></svg><span class="mm">10+ MM</span></div><div class="txt">laarzenweer, modder op de camping</div></div>
     </div>
   </div>
 
@@ -256,7 +265,7 @@ document.querySelectorAll('svg.dr').forEach(svg => dropRow(svg, +svg.dataset.n, 
   const BEST = [21.1, 20.5, 20.4, 20.5, 19.9, 20.4];
   const P10  = [18.0, 18.0, 17.5, 17.2, 17.7, 17.0];
   const P90  = [25.4, 23.7, 24.4, 25.6, 23.9, 23.8];
-  const W = 420, H = 218, m = { l: 30, r: 12, t: 14, b: 24 };
+  const W = 420, H = 196, m = { l: 30, r: 12, t: 12, b: 22 };
   const plotW = W - m.l - m.r, plotH = H - m.t - m.b;
   const yMin = 16, yMax = 26.5;
   const x = (i) => m.l + (i + 0.5) * plotW / 6;
@@ -281,6 +290,42 @@ document.querySelectorAll('svg.dr').forEach(svg => dropRow(svg, +svg.dataset.n, 
   el(svg, 'path', { d: 'M' + BEST.map((v, i) => `${x(i)},${y(v)}`).join(' L'), fill: 'none', stroke: C('--rood'), 'stroke-width': 2.6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
   BEST.forEach((v, i) => el(svg, 'circle', { cx: x(i), cy: y(v), r: 3.2, fill: C('--rood'), stroke: C('--cream'), 'stroke-width': 1.5 }));
   el(svg, 'text', { x: x(5), y: y(BEST[5]) + 19, 'text-anchor': 'end', 'font-size': 9.5, 'font-weight': 700, fill: C('--rood') }, 'beste schatting: rond 20°');
+
+  DAYS.forEach((dg, i) => el(svg, 'text', { x: x(i), y: H - 6, 'text-anchor': 'middle', 'font-size': 9, 'font-weight': 500, fill: C('--muted') }, dg));
+})();
+
+/* ---------- regengrafiek ---------- */
+(function () {
+  const svg = document.getElementById('rainChart');
+  const DAYS = ['wo 19', 'do 20', 'vr 21', 'za 22', 'zo 23', 'ma 24'];
+  const MED = [2.8, 2.0, 1.6, 1.4, 1.2, 1.2];
+  const P90 = [12.6, 7.4, 6.8, 6.2, 6.0, 5.8];
+  const W = 420, H = 196, m = { l: 26, r: 58, t: 16, b: 22 };
+  const plotW = W - m.l - m.r, plotH = H - m.t - m.b;
+  const yMax = 14;
+  const x = (i) => m.l + (i + 0.5) * plotW / 6;
+  const y = (v) => m.t + (yMax - v) / yMax * plotH;
+  const base = y(0);
+
+  // referentielijnen gekoppeld aan de mm-uitleg
+  for (const [v, naam] of [[2, 'buitje'], [5, 'poncho'], [10, 'modder']]) {
+    el(svg, 'line', { x1: m.l, y1: y(v), x2: W - m.r, y2: y(v), stroke: C('--ink'), opacity: 0.28, 'stroke-width': 1, 'stroke-dasharray': '2 4', 'stroke-linecap': 'round' });
+    el(svg, 'text', { x: W - m.r + 7, y: y(v) + 3, 'font-size': 9, 'font-weight': 700, fill: C('--muted') }, `${naam} (${v})`);
+  }
+  el(svg, 'line', { x1: m.l, y1: base, x2: W - m.r, y2: base, stroke: 'rgba(42,24,80,0.35)', 'stroke-width': 1 });
+
+  const bw = 30, r = 3;
+  MED.forEach((v, i) => {
+    const cx = x(i), x0 = cx - bw / 2, x1 = cx + bw / 2, yt = y(v);
+    el(svg, 'path', {
+      d: `M${x0},${base} L${x0},${yt + r} Q${x0},${yt} ${x0 + r},${yt} L${x1 - r},${yt} Q${x1},${yt} ${x1},${yt + r} L${x1},${base} Z`,
+      fill: C('--paars')
+    });
+    const yp = y(P90[i]);
+    el(svg, 'line', { x1: cx, y1: yt - 2, x2: cx, y2: yp, stroke: C('--rood'), 'stroke-width': 1.5, opacity: 0.7 });
+    el(svg, 'line', { x1: cx - 6, y1: yp, x2: cx + 6, y2: yp, stroke: C('--rood'), 'stroke-width': 2 });
+  });
+  el(svg, 'text', { x: x(0) + 10, y: y(P90[0]) - 5, 'font-size': 9, 'font-weight': 700, fill: C('--rood') }, 'als het tegenzit');
 
   DAYS.forEach((dg, i) => el(svg, 'text', { x: x(i), y: H - 6, 'text-anchor': 'middle', 'font-size': 9, 'font-weight': 500, fill: C('--muted') }, dg));
 })();
