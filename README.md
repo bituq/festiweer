@@ -20,6 +20,10 @@ curl "https://ensemble-api.open-meteo.com/v1/ensemble?latitude=52.437&longitude=
 
 `BEST` is het gemiddelde van de twee ensemble-medianen, de band is min(p10) t/m max(p90) over beide ensembles. De regenkans per dag is het percentage leden met minstens 1 mm.
 
+## Iconen
+
+De weericonen zijn [Meteocons](https://github.com/basmilius/weather-icons) van Bas Milius (MIT), lokaal in `assets/icons/`.
+
 ## Fonts en kleuren
 
 Silkscreen (pixel, display) + Schibsted Grotesk (lopende tekst), via Google Fonts. Let op: Silkscreen heeft geen `°`-glyph, daarom zit het gradenteken in een aparte `span` met de bodytekst-font. Palet komt van lowlands.nl 2026: oranje sunset, paars, lila, rood, mint, cream.

@@ -55,7 +55,7 @@
     padding: 13px 12px 12px; text-align: center;
   }
   .kaart .dag { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 15px; color: var(--rood); }
-  .kaart .icon { width: 48px; height: 41px; margin: 6px auto 2px; }
+  .kaart .icon { display: block; width: 76px; height: 62px; margin: 0 auto; }
   .kaart .temp { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 31px; color: var(--paars); line-height: 1; }
   .kaart .temp .gr { font-family: 'Schibsted Grotesk', sans-serif; font-weight: 700; font-size: 26px; vertical-align: 6px; }
   .kaart .nacht { font-size: 10.5px; color: var(--muted); margin-top: 3px; }
@@ -69,7 +69,7 @@
     background: var(--lila-licht); border: 3px solid var(--donkerpaars); box-shadow: 4px 4px 0 var(--schaduw);
     padding: 9px 11px; display: flex; align-items: center; gap: 9px; text-align: left;
   }
-  .strook .icon { width: 32px; height: 30px; flex: none; }
+  .strook .icon { width: 54px; height: 50px; flex: none; margin: -4px 0; }
   .strook .rol { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 9px; color: var(--rood); }
   .strook .feiten { font-size: 10px; font-weight: 700; margin-top: 1px; }
   .strook .zin { font-size: 9.5px; line-height: 1.35; margin-top: 2px; color: var(--ink); }
@@ -120,13 +120,11 @@
   <div class="uitleg">
     <div>
       <h2>HOE WARM WORDT HET?</h2>
-      <p class="sub">De rode lijn is de beste schatting. Het paarse vlak laat zien hoe ver de 82 berekeningen uit elkaar liggen: daarbinnen kan het nog alle kanten op.</p>
-      <svg id="tempChart" viewBox="0 0 420 196"></svg>
+      <svg id="tempChart" viewBox="0 0 420 224"></svg>
     </div>
     <div>
       <h2>HOEVEEL REGEN PER DAG?</h2>
-      <p class="sub">De balk is de verwachting, het streepje erboven de tegenvaller: 1 op de 10 berekeningen komt daar nog boven. Wat die millimeters betekenen zie je onderaan.</p>
-      <svg id="rainChart" viewBox="0 0 420 196"></svg>
+      <svg id="rainChart" viewBox="0 0 420 224"></svg>
     </div>
   </div>
 
@@ -176,28 +174,6 @@ function spikes(id, fill, h) {
 spikes('spikesTop', C('--lila'), 26);
 spikes('spikesBottom', C('--donkerpaars'), 22);
 
-/* ---------- iconen ---------- */
-const CLOUD = 'M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25';
-function icon(type, svg, ink, drop) {
-  const S = (extra = {}) => ({ fill: 'none', stroke: ink, 'stroke-width': 1.7, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', ...extra });
-  const line = (x1, y1, x2, y2, col, w) => el(svg, 'line', { x1, y1, x2, y2, stroke: col, 'stroke-width': w, 'stroke-linecap': 'round' });
-  if (type === 'sun') {
-    el(svg, 'circle', { cx: 12, cy: 12, r: 4.4, ...S() });
-    for (const [a, b, c, d] of [[12,2.5,12,4.5],[12,19.5,12,21.5],[2.5,12,4.5,12],[19.5,12,21.5,12],[5,5,6.4,6.4],[17.6,17.6,19,19],[5,19,6.4,17.6],[17.6,6.4,19,5]]) line(a, b, c, d, ink, 1.7);
-  } else if (type === 'rain') {
-    el(svg, 'path', { d: CLOUD, ...S() });
-    for (const [a, b, c, d] of [[8,15,8,20],[12,17,12,22],[16,15,16,20]]) line(a, b, c, d, drop, 2);
-  } else if (type === 'drizzle') {
-    el(svg, 'path', { d: CLOUD, ...S() });
-    for (const [a, b, c, d] of [[8,15,8,17],[8,19.5,8,21.5],[12,17,12,19],[16,15,16,17],[16,19.5,16,21.5]]) line(a, b, c, d, drop, 2);
-  } else if (type === 'suncloud' || type === 'suncloud-drop') {
-    el(svg, 'circle', { cx: 17, cy: 6.5, r: 3, ...S({ 'stroke-width': 1.6 }) });
-    for (const [a, b, c, d] of [[17,0.8,17,2.2],[21.4,6.5,22.8,6.5],[20.2,3.3,21.2,2.3],[20.2,9.7,21.2,10.7]]) line(a, b, c, d, ink, 1.5);
-    el(svg, 'path', { d: 'M14 9h-1A6.4 6.4 0 1 0 7.5 17.5h6.5a4.25 4.25 0 0 0 0-8.5z', fill: C('--cream'), stroke: ink, 'stroke-width': 1.7, 'stroke-linejoin': 'round' });
-    if (type === 'suncloud-drop') line(10.5, 20, 10.5, 22.5, drop, 2);
-  }
-}
-
 /* ---------- druppelmeters ---------- */
 const DROP_PATH = (s, ox, oy) => `M${ox + 6 * s} ${oy + 1 * s}l${3.2 * s} ${3.6 * s}a${4.6 * s} ${4.6 * s} 0 1 1 -${6.4 * s} 0z`;
 function dropRow(svg, n, max, color, faint) {
@@ -207,25 +183,28 @@ function dropRow(svg, n, max, color, faint) {
 
 /* ---------- dagkaarten ---------- */
 const GROOT = [
-  { dag: 'VR 21', icon: 'suncloud-drop', max: 20, min: 13, kans: 67, drops: 1, zin: 'hooguit even schuilen' },
-  { dag: 'ZA 22', icon: 'suncloud',      max: 21, min: 12, kans: 57, drops: 1, zin: 'waarschijnlijk droog' },
-  { dag: 'ZO 23', icon: 'sun',           max: 20, min: 11, kans: 63, drops: 1, zin: 'meeste zon, frisse nacht' },
+  { dag: 'VR 21', icon: 'partly-cloudy-day-drizzle', max: 20, min: 13, kans: 67, drops: 1, zin: 'hooguit even schuilen' },
+  { dag: 'ZA 22', icon: 'partly-cloudy-day',         max: 21, min: 12, kans: 57, drops: 1, zin: 'waarschijnlijk droog' },
+  { dag: 'ZO 23', icon: 'clear-day',                 max: 20, min: 11, kans: 63, drops: 1, zin: 'meeste zon, frisse nacht' },
 ];
 const KLEIN = [
   { rol: 'OPBOUW · WO 19',   icon: 'rain',    max: 21, kans: 88, zin: 'nat en winderig, zet alles stevig vast' },
   { rol: 'AANKOMST · DO 20', icon: 'drizzle', max: 21, kans: 75, zin: 'paar buien, wind gaat langzaam liggen' },
   { rol: 'NAAR HUIS · MA 24', icon: 'rain',   max: 20, kans: 59, zin: 'kans op een natte tent bij het inpakken' },
 ];
+const iconImg = (naam) => {
+  const img = document.createElement('img');
+  img.className = 'icon';
+  img.src = 'assets/icons/' + naam + '.svg';
+  return img;
+};
 
 const groot = document.getElementById('groot');
 GROOT.forEach(d => {
   const k = document.createElement('div');
   k.className = 'kaart';
   k.innerHTML = `<div class="dag">${d.dag}</div>`;
-  const isvg = document.createElementNS(NS, 'svg');
-  isvg.setAttribute('viewBox', '0 0 24 24'); isvg.setAttribute('class', 'icon');
-  icon(d.icon, isvg, C('--donkerpaars'), C('--paars'));
-  k.appendChild(isvg);
+  k.appendChild(iconImg(d.icon));
   k.insertAdjacentHTML('beforeend', `
     <div class="temp">${d.max}<span class="gr">°</span></div>
     <div class="nacht">'s nachts ${d.min}°</div>
@@ -243,10 +222,7 @@ const klein = document.getElementById('klein');
 KLEIN.forEach(d => {
   const k = document.createElement('div');
   k.className = 'strook';
-  const isvg = document.createElementNS(NS, 'svg');
-  isvg.setAttribute('viewBox', '0 0 24 24'); isvg.setAttribute('class', 'icon');
-  icon(d.icon, isvg, C('--donkerpaars'), C('--paars'));
-  k.appendChild(isvg);
+  k.appendChild(iconImg(d.icon));
   k.insertAdjacentHTML('beforeend', `<div>
     <div class="rol">${d.rol}</div>
     <div class="feiten">${d.max}° · ${d.kans}% kans op regen</div>
@@ -265,7 +241,7 @@ document.querySelectorAll('svg.dr').forEach(svg => dropRow(svg, +svg.dataset.n, 
   const BEST = [21.1, 20.5, 20.4, 20.5, 19.9, 20.4];
   const P10  = [18.0, 18.0, 17.5, 17.2, 17.7, 17.0];
   const P90  = [25.4, 23.7, 24.4, 25.6, 23.9, 23.8];
-  const W = 420, H = 196, m = { l: 30, r: 12, t: 12, b: 22 };
+  const W = 420, H = 224, m = { l: 30, r: 12, t: 14, b: 22 };
   const plotW = W - m.l - m.r, plotH = H - m.t - m.b;
   const yMin = 16, yMax = 26.5;
   const x = (i) => m.l + (i + 0.5) * plotW / 6;
@@ -300,7 +276,7 @@ document.querySelectorAll('svg.dr').forEach(svg => dropRow(svg, +svg.dataset.n, 
   const DAYS = ['wo 19', 'do 20', 'vr 21', 'za 22', 'zo 23', 'ma 24'];
   const MED = [2.8, 2.0, 1.6, 1.4, 1.2, 1.2];
   const P90 = [12.6, 7.4, 6.8, 6.2, 6.0, 5.8];
-  const W = 420, H = 196, m = { l: 26, r: 58, t: 16, b: 22 };
+  const W = 420, H = 224, m = { l: 26, r: 58, t: 18, b: 22 };
   const plotW = W - m.l - m.r, plotH = H - m.t - m.b;
   const yMax = 14;
   const x = (i) => m.l + (i + 0.5) * plotW / 6;
