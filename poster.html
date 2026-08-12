@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<title>Lowlands 2026 · het weer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Schibsted+Grotesk:ital,wght@0,400;0,500;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --oranje: #D96F26;
+    --oranje-diep: #C24E1E;
+    --rood: #D8262B;
+    --paars: #4A2C8F;
+    --donkerpaars: #2E1A5E;
+    --schaduw: #231147;
+    --lila: #CDB5DE;
+    --lila-licht: #E9DDF2;
+    --mint: #8FE4B4;
+    --cream: #F4EBDA;
+    --ink: #2A1850;
+    --muted: #6B5A8C;
+  }
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--cream); color: var(--ink); font-family: 'Schibsted Grotesk', sans-serif; }
+  .pix { font-family: 'Silkscreen', monospace; font-weight: 700; }
+  .page { width: 210mm; height: 297mm; overflow: hidden; display: flex; flex-direction: column; }
+  svg { display: block; }
+
+  /* ---------- hero ---------- */
+  .hero { background: linear-gradient(180deg, var(--oranje) 0%, var(--oranje-diep) 100%); padding: 34px 44px 0; text-align: center; }
+  .hero .boven { font-family: 'Silkscreen', monospace; font-weight: 400; font-size: 15px; color: var(--cream); letter-spacing: 1px; }
+  .hero h1 {
+    font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 72px; line-height: 0.95;
+    color: var(--paars); text-shadow: 5px 5px 0 var(--donkerpaars);
+    margin: 10px 0 14px;
+  }
+  .hero .onder { font-family: 'Silkscreen', monospace; font-weight: 400; font-size: 12px; color: var(--cream); }
+  .spikes { width: 100%; height: 26px; margin-top: 18px; }
+
+  /* ---------- verdict ---------- */
+  .verdict { background: var(--lila); padding: 20px 44px 22px; text-align: center; }
+  .verdict .kop { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 21px; color: var(--rood); }
+  .verdict p { margin: 9px auto 0; max-width: 168mm; font-size: 12px; line-height: 1.55; color: var(--ink); }
+
+  /* ---------- paars blok met dagen ---------- */
+  .dagen { background: var(--paars); padding: 22px 40px 24px; }
+  .dagen h2 { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 17px; color: var(--cream); margin: 0 0 13px; text-align: center; }
+  .dagen h2 em { font-style: normal; color: var(--mint); }
+  .groot { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .kaart {
+    background: var(--cream); border: 3px solid var(--donkerpaars); box-shadow: 6px 6px 0 var(--schaduw);
+    padding: 13px 12px 12px; text-align: center;
+  }
+  .kaart .dag { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 15px; color: var(--rood); }
+  .kaart .icon { width: 54px; height: 46px; margin: 8px auto 2px; }
+  .kaart .temp { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 33px; color: var(--paars); line-height: 1; }
+  .kaart .temp .gr { font-family: 'Schibsted Grotesk', sans-serif; font-weight: 700; font-size: 26px; vertical-align: 6px; }
+  .kaart .nacht { font-size: 10.5px; color: var(--muted); margin-top: 3px; }
+  .kaart .kans { font-size: 11px; font-weight: 700; margin-top: 9px; }
+  .kaart .drops { margin-top: 6px; height: 14px; display: flex; justify-content: center; gap: 3px; }
+  .kaart .zin { font-size: 10.5px; font-style: italic; margin-top: 6px; color: var(--ink); }
+
+  .dagen h3 { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 12px; color: var(--lila); margin: 18px 0 10px; text-align: center; }
+  .klein { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .strook {
+    background: var(--lila-licht); border: 3px solid var(--donkerpaars); box-shadow: 4px 4px 0 var(--schaduw);
+    padding: 9px 11px; display: flex; align-items: center; gap: 9px; text-align: left;
+  }
+  .strook .icon { width: 32px; height: 30px; flex: none; }
+  .strook .rol { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 9px; color: var(--rood); }
+  .strook .feiten { font-size: 10px; font-weight: 700; margin-top: 1px; }
+  .strook .zin { font-size: 9.5px; line-height: 1.35; margin-top: 2px; color: var(--ink); }
+
+  /* ---------- uitleg: warmte + mm ---------- */
+  .uitleg { padding: 20px 40px 6px; display: grid; grid-template-columns: 57% 43%; gap: 26px; flex: 1; }
+  .uitleg h2 { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 14px; color: var(--paars); margin: 0 0 4px; }
+  .uitleg .sub { font-size: 10.5px; color: var(--muted); margin: 0 0 8px; }
+  .mm-intro { font-size: 11px; font-weight: 700; margin: 2px 0 9px; }
+  .mm-rij { display: flex; align-items: center; gap: 9px; padding: 5.5px 0; border-top: 1.5px solid rgba(74,44,143,0.18); }
+  .mm-rij:last-of-type { border-bottom: 1.5px solid rgba(74,44,143,0.18); }
+  .mm-rij .dr { width: 58px; height: 15px; flex: none; }
+  .mm-rij .mm { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 11px; color: var(--paars); width: 64px; flex: none; white-space: nowrap; }
+  .mm-rij .txt { font-size: 10.5px; line-height: 1.3; }
+  .mm-slot { font-size: 10.5px; line-height: 1.45; margin-top: 9px; color: var(--ink); }
+
+  /* ---------- footer ---------- */
+  .voet-spikes { width: 100%; height: 22px; display: block; }
+  footer { background: var(--donkerpaars); color: var(--lila); padding: 12px 44px 16px; font-size: 9px; line-height: 1.55; text-align: center; }
+  footer b { color: var(--cream); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hero">
+    <div class="boven">LOWLANDS 2026</div>
+    <h1>HET WEER</h1>
+    <div class="onder">WO 19 T/M MA 24 AUGUSTUS &nbsp;+&nbsp; BIDDINGHUIZEN</div>
+    <svg class="spikes" id="spikesTop" viewBox="0 0 744 26" preserveAspectRatio="none"></svg>
+  </div>
+
+  <div class="verdict">
+    <div class="kop">GEEN HITTE, GEEN NOODWEER</div>
+    <p>Overdag rond de 20 graden, af en toe een bui. De meeste regen valt vóór het festival, op woensdag en donderdag.
+    Vrijdag tot en met zondag is het meestal droog met zo'n acht uur zon per dag. Alleen maandag, bij het afbreken,
+    wordt het waarschijnlijk weer nat. Dit zeggen ruim 80 weerberekeningen, en ze zeggen bijna allemaal hetzelfde.</p>
+  </div>
+
+  <div class="dagen">
+    <h2>DE FESTIVALDAGEN: <em>21 + 22 + 23</em></h2>
+    <div class="groot" id="groot"></div>
+    <h3>KOMEN EN GAAN</h3>
+    <div class="klein" id="klein"></div>
+  </div>
+
+  <div class="uitleg">
+    <div>
+      <h2>HOE WARM WORDT HET?</h2>
+      <p class="sub">De rode lijn is de beste schatting. Het paarse vlak laat zien hoe ver de 82 berekeningen uit elkaar liggen: daarbinnen kan het nog alle kanten op.</p>
+      <svg id="tempChart" viewBox="0 0 420 218"></svg>
+    </div>
+    <div>
+      <h2>HOEVEEL IS 1 MM REGEN?</h2>
+      <p class="mm-intro">1 millimeter = 1 liter water op elke vierkante meter.</p>
+      <div class="mm-rij"><svg class="dr" data-n="1" viewBox="0 0 58 15"></svg><span class="mm">1 MM</span><span class="txt">een spatje, merk je amper</span></div>
+      <div class="mm-rij"><svg class="dr" data-n="2" viewBox="0 0 58 15"></svg><span class="mm">2 MM</span><span class="txt">een buitje, vijf minuten schuilen</span></div>
+      <div class="mm-rij"><svg class="dr" data-n="3" viewBox="0 0 58 15"></svg><span class="mm">5 MM</span><span class="txt">een stevige bui, poncho aan</span></div>
+      <div class="mm-rij"><svg class="dr" data-n="4" viewBox="0 0 58 15"></svg><span class="mm">10+ MM</span><span class="txt">laarzenweer, modder op de camping</span></div>
+      <p class="mm-slot">Woensdag is de natste dag: rond de 3 mm, met uitschieters naar 12.
+      De festivaldagen zelf blijven meestal onder de 2 mm: hooguit een buitje dus.</p>
+    </div>
+  </div>
+
+  <svg class="voet-spikes" id="spikesBottom" viewBox="0 0 744 22" preserveAspectRatio="none"></svg>
+  <footer>
+    Gemaakt op 12 augustus 2026 uit <b>82 doorrekeningen</b> van het Europese (ECMWF) en Amerikaanse (GFS) weermodel, plus de KNMI-verwachting.
+    De kans op een bui is het deel van de berekeningen dat die dag regen ziet.<br>
+    Zo ver vooruit is niets zeker: <b>check op de dag zelf even Buienradar.</b>
+  </footer>
+
+</div>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const CSS = getComputedStyle(document.documentElement);
+const C = (n) => CSS.getPropertyValue(n).trim();
+function el(parent, tag, attrs = {}, text) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (text !== undefined) e.textContent = text;
+  parent.appendChild(e);
+  return e;
+}
+
+/* ---------- spike-dividers (de Lowlands-kegels) ---------- */
+function spikes(id, fill, h) {
+  const svg = document.getElementById(id);
+  const W = 744, n = 26, w = W / n;
+  for (let i = 0; i < n; i++) {
+    const x = i * w, top = (i % 2 === 0) ? 0 : h * 0.42;
+    el(svg, 'polygon', { points: `${x},${h} ${x + w / 2},${top} ${x + w},${h}`, fill });
+  }
+}
+spikes('spikesTop', C('--lila'), 26);
+spikes('spikesBottom', C('--donkerpaars'), 22);
+
+/* ---------- iconen ---------- */
+const CLOUD = 'M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25';
+function icon(type, svg, ink, drop) {
+  const S = (extra = {}) => ({ fill: 'none', stroke: ink, 'stroke-width': 1.7, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', ...extra });
+  const line = (x1, y1, x2, y2, col, w) => el(svg, 'line', { x1, y1, x2, y2, stroke: col, 'stroke-width': w, 'stroke-linecap': 'round' });
+  if (type === 'sun') {
+    el(svg, 'circle', { cx: 12, cy: 12, r: 4.4, ...S() });
+    for (const [a, b, c, d] of [[12,2.5,12,4.5],[12,19.5,12,21.5],[2.5,12,4.5,12],[19.5,12,21.5,12],[5,5,6.4,6.4],[17.6,17.6,19,19],[5,19,6.4,17.6],[17.6,6.4,19,5]]) line(a, b, c, d, ink, 1.7);
+  } else if (type === 'rain') {
+    el(svg, 'path', { d: CLOUD, ...S() });
+    for (const [a, b, c, d] of [[8,15,8,20],[12,17,12,22],[16,15,16,20]]) line(a, b, c, d, drop, 2);
+  } else if (type === 'drizzle') {
+    el(svg, 'path', { d: CLOUD, ...S() });
+    for (const [a, b, c, d] of [[8,15,8,17],[8,19.5,8,21.5],[12,17,12,19],[16,15,16,17],[16,19.5,16,21.5]]) line(a, b, c, d, drop, 2);
+  } else if (type === 'suncloud' || type === 'suncloud-drop') {
+    el(svg, 'circle', { cx: 17, cy: 6.5, r: 3, ...S({ 'stroke-width': 1.6 }) });
+    for (const [a, b, c, d] of [[17,0.8,17,2.2],[21.4,6.5,22.8,6.5],[20.2,3.3,21.2,2.3],[20.2,9.7,21.2,10.7]]) line(a, b, c, d, ink, 1.5);
+    el(svg, 'path', { d: 'M14 9h-1A6.4 6.4 0 1 0 7.5 17.5h6.5a4.25 4.25 0 0 0 0-8.5z', fill: C('--cream'), stroke: ink, 'stroke-width': 1.7, 'stroke-linejoin': 'round' });
+    if (type === 'suncloud-drop') line(10.5, 20, 10.5, 22.5, drop, 2);
+  }
+}
+
+/* ---------- druppelmeters ---------- */
+const DROP_PATH = (s, ox, oy) => `M${ox + 6 * s} ${oy + 1 * s}l${3.2 * s} ${3.6 * s}a${4.6 * s} ${4.6 * s} 0 1 1 -${6.4 * s} 0z`;
+function dropRow(svg, n, max, color, faint) {
+  for (let i = 0; i < max; i++)
+    el(svg, 'path', { d: DROP_PATH(1.05, i * 14 + 1, 0.5), fill: i < n ? color : 'none', stroke: i < n ? 'none' : faint, 'stroke-width': 1.2 });
+}
+
+/* ---------- dagkaarten ---------- */
+const GROOT = [
+  { dag: 'VR 21', icon: 'suncloud-drop', max: 20, min: 13, kans: 67, drops: 1, zin: 'hooguit even schuilen' },
+  { dag: 'ZA 22', icon: 'suncloud',      max: 21, min: 12, kans: 57, drops: 1, zin: 'waarschijnlijk droog' },
+  { dag: 'ZO 23', icon: 'sun',           max: 20, min: 11, kans: 63, drops: 1, zin: 'meeste zon, frisse nacht' },
+];
+const KLEIN = [
+  { rol: 'OPBOUW · WO 19',   icon: 'rain',    max: 21, kans: 88, zin: 'nat en winderig, zet alles stevig vast' },
+  { rol: 'AANKOMST · DO 20', icon: 'drizzle', max: 21, kans: 75, zin: 'paar buien, wind gaat langzaam liggen' },
+  { rol: 'NAAR HUIS · MA 24', icon: 'rain',   max: 20, kans: 59, zin: 'kans op een natte tent bij het inpakken' },
+];
+
+const groot = document.getElementById('groot');
+GROOT.forEach(d => {
+  const k = document.createElement('div');
+  k.className = 'kaart';
+  k.innerHTML = `<div class="dag">${d.dag}</div>`;
+  const isvg = document.createElementNS(NS, 'svg');
+  isvg.setAttribute('viewBox', '0 0 24 24'); isvg.setAttribute('class', 'icon');
+  icon(d.icon, isvg, C('--donkerpaars'), C('--paars'));
+  k.appendChild(isvg);
+  k.insertAdjacentHTML('beforeend', `
+    <div class="temp">${d.max}<span class="gr">°</span></div>
+    <div class="nacht">'s nachts ${d.min}°</div>
+    <div class="kans">${d.kans}% kans op een bui</div>`);
+  const dsvg = document.createElementNS(NS, 'svg');
+  dsvg.setAttribute('viewBox', '0 0 58 15'); dsvg.style.width = '44px'; dsvg.style.height = '13px';
+  const wrap = document.createElement('div'); wrap.className = 'drops'; wrap.appendChild(dsvg);
+  dropRow(dsvg, d.drops, 4, C('--paars'), 'rgba(74,44,143,0.4)');
+  k.appendChild(wrap);
+  k.insertAdjacentHTML('beforeend', `<div class="zin">${d.zin}</div>`);
+  groot.appendChild(k);
+});
+
+const klein = document.getElementById('klein');
+KLEIN.forEach(d => {
+  const k = document.createElement('div');
+  k.className = 'strook';
+  const isvg = document.createElementNS(NS, 'svg');
+  isvg.setAttribute('viewBox', '0 0 24 24'); isvg.setAttribute('class', 'icon');
+  icon(d.icon, isvg, C('--donkerpaars'), C('--paars'));
+  k.appendChild(isvg);
+  k.insertAdjacentHTML('beforeend', `<div>
+    <div class="rol">${d.rol}</div>
+    <div class="feiten">${d.max}° · ${d.kans}% kans op regen</div>
+    <div class="zin">${d.zin}</div>
+  </div>`);
+  klein.appendChild(k);
+});
+
+/* ---------- mm-druppels ---------- */
+document.querySelectorAll('svg.dr').forEach(svg => dropRow(svg, +svg.dataset.n, 4, C('--paars'), 'rgba(74,44,143,0.35)'));
+
+/* ---------- temperatuurgrafiek ---------- */
+(function () {
+  const svg = document.getElementById('tempChart');
+  const DAYS = ['wo 19', 'do 20', 'vr 21', 'za 22', 'zo 23', 'ma 24'];
+  const BEST = [21.1, 20.5, 20.4, 20.5, 19.9, 20.4];
+  const P10  = [18.0, 18.0, 17.5, 17.2, 17.7, 17.0];
+  const P90  = [25.4, 23.7, 24.4, 25.6, 23.9, 23.8];
+  const W = 420, H = 218, m = { l: 30, r: 12, t: 14, b: 24 };
+  const plotW = W - m.l - m.r, plotH = H - m.t - m.b;
+  const yMin = 16, yMax = 26.5;
+  const x = (i) => m.l + (i + 0.5) * plotW / 6;
+  const y = (v) => m.t + (yMax - v) / (yMax - yMin) * plotH;
+
+  for (const t of [16, 20, 24]) {
+    el(svg, 'line', { x1: m.l, y1: y(t), x2: W - m.r, y2: y(t), stroke: t === 16 ? 'rgba(42,24,80,0.35)' : 'rgba(42,24,80,0.12)', 'stroke-width': 1 });
+    el(svg, 'text', { x: m.l - 6, y: y(t) + 3, 'text-anchor': 'end', 'font-size': 9, fill: C('--muted') }, t + '°');
+  }
+
+  // band waar vrijwel alle berekeningen tussen zitten
+  let d = 'M' + P90.map((v, i) => `${x(i)},${y(v)}`).join(' L');
+  d += ' L' + P10.slice().reverse().map((v, i) => `${x(5 - i)},${y(v)}`).join(' L') + ' Z';
+  el(svg, 'path', { d, fill: C('--lila'), opacity: 0.75 });
+  el(svg, 'text', { x: x(2.5), y: y(23.4), 'text-anchor': 'middle', 'font-size': 9.5, fill: C('--paars'), 'font-weight': 700 }, 'vrijwel zeker hier tussenin');
+
+  // normaal eind augustus
+  el(svg, 'line', { x1: m.l, y1: y(22), x2: W - m.r, y2: y(22), stroke: C('--ink'), opacity: 0.45, 'stroke-width': 1.2, 'stroke-dasharray': '2 4', 'stroke-linecap': 'round' });
+  el(svg, 'text', { x: W - m.r - 2, y: y(22) - 5, 'text-anchor': 'end', 'font-size': 8.5, fill: C('--muted') }, 'normaal eind augustus: 22°');
+
+  // beste schatting
+  el(svg, 'path', { d: 'M' + BEST.map((v, i) => `${x(i)},${y(v)}`).join(' L'), fill: 'none', stroke: C('--rood'), 'stroke-width': 2.6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+  BEST.forEach((v, i) => el(svg, 'circle', { cx: x(i), cy: y(v), r: 3.2, fill: C('--rood'), stroke: C('--cream'), 'stroke-width': 1.5 }));
+  el(svg, 'text', { x: x(5), y: y(BEST[5]) + 19, 'text-anchor': 'end', 'font-size': 9.5, 'font-weight': 700, fill: C('--rood') }, 'beste schatting: rond 20°');
+
+  DAYS.forEach((dg, i) => el(svg, 'text', { x: x(i), y: H - 6, 'text-anchor': 'middle', 'font-size': 9, 'font-weight': 500, fill: C('--muted') }, dg));
+})();
+</script>
+</body>
+</html>
