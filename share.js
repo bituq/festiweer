@@ -193,7 +193,9 @@
     try {
       const blob = await maakStory();
       const file = new File([blob], 'lowlands-weer.png', { type: 'image/png' });
+      try { await navigator.clipboard.writeText(SITE); } catch {}
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        melding('De link staat op je klembord: plak hem in Instagram in de linksticker.');
         await navigator.share({ files: [file], title: 'Lowlands 2026 · het weer', text: SITE });
       } else {
         const a = document.createElement('a');
@@ -201,7 +203,7 @@
         a.download = 'lowlands-weer.png';
         a.click();
         URL.revokeObjectURL(a.href);
-        melding('Story-graphic gedownload. Deel hem via de Instagram-app; de link staat op de afbeelding.');
+        melding('Story-graphic gedownload en de link staat op je klembord: plak hem in Instagram in de linksticker.');
       }
     } catch (e) {
       if (e.name !== 'AbortError') melding('Delen lukte niet, probeer het nog eens.');
