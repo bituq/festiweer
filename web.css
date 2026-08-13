@@ -16,6 +16,37 @@ body { background: var(--donkerpaars); }
   .page { zoom: 1.5; }
 }
 
+/* Deelbalk */
+.deelbar {
+  position: fixed; right: 18px; bottom: 18px; z-index: 50;
+  display: flex; align-items: center; gap: 10px;
+  background: var(--donkerpaars); border: 3px solid var(--schaduw);
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.35);
+  padding: 10px 14px;
+  zoom: 1 !important;
+}
+.deel-label { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 13px; color: var(--lila); }
+.deel-knop {
+  border: none;
+  padding: 9px 12px; cursor: pointer; box-shadow: 3px 3px 0 var(--schaduw);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.deel-knop svg { width: 18px; height: 18px; display: block; fill: #fff; }
+#deelTwitter { background: #1DA1F2; }
+#deelInsta { background: radial-gradient(circle at 30% 110%, #FEDA75, #FA7E1E 40%, #D62976 65%, #962FBF 85%, #4F5BD5); }
+.deel-knop:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--schaduw); }
+.deel-knop:disabled { opacity: 0.6; cursor: wait; }
+#deelInsta { background: var(--paars); }
+.deel-toast {
+  position: fixed; left: 50%; bottom: 84px; transform: translateX(-50%) translateY(10px);
+  z-index: 51; max-width: 90vw;
+  background: var(--lila); color: var(--ink); border: 3px solid var(--donkerpaars);
+  box-shadow: 4px 4px 0 var(--schaduw);
+  font-size: 13px; font-weight: 500; padding: 10px 16px;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s;
+}
+.deel-toast.zichtbaar { opacity: 1; transform: translateX(-50%) translateY(0); }
+
 /* Mobiel: stapelen en tekst vergroten. */
 @media (max-width: 680px) {
   .groot, .klein, .uitleg, .mm-grid { grid-template-columns: 1fr; }

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<title>og</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  body { width: 1200px; height: 630px; overflow: hidden; background: linear-gradient(180deg, #D96F26, #C24E1E); font-family: 'Silkscreen', monospace; position: relative; }
+  .inhoud { text-align: center; padding-top: 108px; }
+  .boven { font-size: 34px; color: #F4EBDA; font-weight: 400; letter-spacing: 2px; }
+  h1 { font-size: 128px; color: #4A2C8F; font-weight: 700; text-shadow: 8px 8px 0 #2E1A5E; margin: 18px 0 26px; line-height: 1; }
+  .onder { font-size: 27px; color: #F4EBDA; font-weight: 400; }
+  .link { display: inline-block; margin-top: 44px; font-size: 30px; font-weight: 700; color: #F4EBDA; background: #4A2C8F; border: 4px solid #2E1A5E; box-shadow: 7px 7px 0 #2E1A5E; padding: 16px 30px; }
+  svg.spikes { position: absolute; bottom: 0; left: 0; width: 100%; height: 52px; display: block; }
+</style>
+</head>
+<body>
+  <div class="inhoud">
+    <div class="boven">LOWLANDS 2026</div>
+    <h1>HET WEER</h1>
+    <div class="onder">DE VERWACHTING UIT 82 WEERBEREKENINGEN + ELKE 4 UUR VERS</div>
+    <span class="link">LOWLANDS.FESTIWEER.NL</span>
+  </div>
+  <svg class="spikes" viewBox="0 0 1200 52" preserveAspectRatio="none" id="sp"></svg>
+  <script>
+    const svg = document.getElementById('sp');
+    const n = 26, w = 1200 / n;
+    for (let i = 0; i < n; i++) {
+      const x = i * w, top = (i % 2 === 0) ? 0 : 52 * 0.42;
+      const p = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      p.setAttribute('points', `${x},52 ${x + w / 2},${top} ${x + w},52`);
+      p.setAttribute('fill', '#CDB5DE');
+      svg.appendChild(p);
+    }
+  </script>
+</body>
+</html>
