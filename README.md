@@ -1,24 +1,23 @@
 # lowlands-weer
 
-Weerposter voor Lowlands in de designtaal van het festival (pixel-typo, spikes, oranje/paars/lila). Gebouwd uit de ensemble-runs van ECMWF (51 leden) en GFS (31 leden) via Open-Meteo, plus de KNMI-vooruitzichten.
+Weerposter en -site voor Lowlands in de designtaal van het festival (pixel-typo, spikes, oranje/paars/lila). Gebouwd uit de ensemble-runs van ECMWF (51 leden) en GFS (31 leden) via Open-Meteo.
 
-## Renderen
+## Hoe het werkt
 
-```sh
-bun scripts/render.ts poster.html lowlands-2026-weer.pdf preview.png
-```
-
-Levert een full-bleed A4 PDF op. De renderer leunt op de Puppeteer-install van de pdf-generator skill in `~/.claude/skills/pdf-generator`.
-
-## Data verversen
-
-De cijfers staan hardcoded in `poster.html`: `BEST`/`P10`/`P90` in de temperatuurgrafiek, `MED`/`P90` in de regengrafiek en de `GROOT`/`KLEIN` dagkaarten. Verse cijfers haal je zo op:
+- `scripts/fetch-data.ts` haalt de ensembles op, rekent alles door (medianen, p10/p90-band, regenkansen) en leidt de teksten, iconen en druppelmeters af via regels. Output: `data.js` (`window.WEERDATA`).
+- `poster.html` is de enige bron voor het ontwerp; hij leest alles uit `data.js`.
+- `scripts/build-site.ts` genereert daaruit `index.html` (webversie: viewport-meta + `web.css` responsive overrides).
+- `scripts/render.ts` rendert de A4-PDF (leunt op de Puppeteer-install van de pdf-generator skill in `~/.claude/skills/pdf-generator`).
 
 ```sh
-curl "https://ensemble-api.open-meteo.com/v1/ensemble?latitude=52.437&longitude=5.763&daily=temperature_2m_max,precipitation_sum,wind_gusts_10m_max&models=ecmwf_ifs025,gfs05&timezone=Europe%2FAmsterdam&start_date=2026-08-19&end_date=2026-08-24"
+bun scripts/fetch-data.ts                                        # verse cijfers
+bun scripts/build-site.ts                                        # index.html
+bun scripts/render.ts poster.html lowlands-2026-weer.pdf preview.png  # PDF
 ```
 
-`BEST` is het gemiddelde van de twee ensemble-medianen, de band is min(p10) t/m max(p90) over beide ensembles. De regenkans per dag is het percentage leden met minstens 1 mm.
+## Website
+
+GitHub Actions (`.github/workflows/update.yml`) draait elke 4 uur: verse data ophalen, site bouwen, deployen naar GitHub Pages. Ook handmatig te triggeren via workflow_dispatch.
 
 ## Iconen
 

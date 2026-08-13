@@ -1,0 +1,22 @@
+/* Overrides voor de webversie (index.html); poster.html/PDF laadt dit niet. */
+body { background: var(--donkerpaars); }
+.page {
+  width: 100%; max-width: 900px; height: auto; min-height: 100vh;
+  margin: 0 auto; box-shadow: 0 0 70px rgba(0, 0, 0, 0.4);
+  background: var(--cream);
+}
+
+@media (max-width: 680px) {
+  .groot, .klein, .uitleg, .mm-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: clamp(36px, 13vw, 63px); text-shadow: 3px 3px 0 var(--donkerpaars); }
+  .hero .boven { font-size: 12px; }
+  .hero .onder { font-size: 10px; }
+  .hero, .verdict, .dagen, .uitleg, .mmblok, footer { padding-left: 16px; padding-right: 16px; }
+  .kaart .temp { font-size: 40px; }
+  .kaart .icon { width: 90px; height: 74px; }
+  .strook .icon { width: 60px; height: 56px; }
+  .strook .rol { font-size: 10px; }
+  .strook .feiten { font-size: 12px; }
+  .strook .zin { font-size: 11px; }
+  .uitleg > div + div { margin-top: 10px; }
+}
