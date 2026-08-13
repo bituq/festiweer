@@ -1,22 +1,56 @@
 /* Overrides voor de webversie (index.html); poster.html/PDF laadt dit niet. */
+html { -webkit-text-size-adjust: 100%; }
 body { background: var(--donkerpaars); }
 .page {
-  width: 100%; max-width: 900px; height: auto; min-height: 100vh;
+  width: 100%; max-width: 880px; height: auto; min-height: 100vh;
   margin: 0 auto; box-shadow: 0 0 70px rgba(0, 0, 0, 0.4);
   background: var(--cream);
 }
 
+/* Desktop: de poster is op printformaat ontworpen (11px basistekst), dus
+   op brede schermen schalen we het geheel op naar website-formaat. */
+@media (min-width: 1060px) and (max-width: 1359.9px) {
+  .page { zoom: 1.18; }
+}
+@media (min-width: 1360px) {
+  .page { zoom: 1.5; }
+}
+
+/* Mobiel: stapelen en tekst vergroten. */
 @media (max-width: 680px) {
   .groot, .klein, .uitleg, .mm-grid { grid-template-columns: 1fr; }
   .hero h1 { font-size: clamp(36px, 13vw, 63px); text-shadow: 3px 3px 0 var(--donkerpaars); }
-  .hero .boven { font-size: 12px; }
+  .hero .boven { font-size: 13px; }
   .hero .onder { font-size: 10px; }
   .hero, .verdict, .dagen, .uitleg, .mmblok, footer { padding-left: 16px; padding-right: 16px; }
-  .kaart .temp { font-size: 40px; }
-  .kaart .icon { width: 90px; height: 74px; }
-  .strook .icon { width: 60px; height: 56px; }
-  .strook .rol { font-size: 10px; }
-  .strook .feiten { font-size: 12px; }
-  .strook .zin { font-size: 11px; }
-  .uitleg > div + div { margin-top: 10px; }
+
+  .verdict .kop { font-size: 19px; }
+  .verdict p { font-size: 15px; max-width: none; }
+
+  .dagen h2 { font-size: 15px; }
+  .dagen h3 { font-size: 13px; }
+  .kaart .dag { font-size: 17px; }
+  .kaart .icon { width: 96px; height: 80px; }
+  .kaart .temp { font-size: 44px; }
+  .kaart .temp .gr { font-size: 34px; vertical-align: 9px; }
+  .kaart .nacht { font-size: 13px; }
+  .kaart .kans { font-size: 15px; }
+  .kaart .zin { font-size: 14px; }
+  .kaart .drops svg { width: 54px !important; height: 16px !important; }
+
+  .strook .icon { width: 64px; height: 60px; }
+  .strook .rol { font-size: 11px; }
+  .strook .feiten { font-size: 14px; }
+  .strook .zin { font-size: 12.5px; }
+
+  .uitleg h2, .mmblok h2 { font-size: 15px; }
+  .uitleg > div { overflow-x: auto; }
+  .uitleg svg { min-width: 560px; }
+  .mm-intro { font-size: 13px; }
+  .mmblok .kopregel { flex-direction: column; gap: 4px; }
+  .mm-item .mm { font-size: 13px; }
+  .mm-item .txt { font-size: 13px; }
+  .mm-item .dr { width: 66px; height: 17px; }
+
+  footer { font-size: 11px; }
 }
