@@ -8,33 +8,63 @@
 <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; box-sizing: border-box; }
-  body { width: 1200px; height: 630px; overflow: hidden; background: linear-gradient(180deg, #D96F26, #C24E1E); font-family: 'Silkscreen', monospace; position: relative; }
-  .inhoud { text-align: center; padding-top: 108px; }
-  .boven { font-size: 34px; color: #F4EBDA; font-weight: 400; letter-spacing: 2px; }
-  h1 { font-size: 128px; color: #4A2C8F; font-weight: 700; text-shadow: 8px 8px 0 #2E1A5E; margin: 18px 0 26px; line-height: 1; }
-  .onder { font-size: 27px; color: #F4EBDA; font-weight: 400; }
-  .link { display: inline-block; margin-top: 44px; font-size: 30px; font-weight: 700; color: #F4EBDA; background: #4A2C8F; border: 4px solid #2E1A5E; box-shadow: 7px 7px 0 #2E1A5E; padding: 16px 30px; }
-  svg.spikes { position: absolute; bottom: 0; left: 0; width: 100%; height: 52px; display: block; }
+  body {
+    width: 1200px; height: 630px; overflow: hidden; position: relative;
+    font-family: 'Silkscreen', monospace;
+    background: linear-gradient(180deg,
+      #31255F 0%, #3B3078 16%, #41549B 34%, #6390B0 52%, #9DBDB4 64%,
+      #D6C49F 74%, #ECAF6B 84%, #E5823A 94%, #DF6E28 100%);
+  }
+  .merk { position: absolute; left: 56px; top: 48px; font-weight: 700; font-size: 54px; line-height: 1.02; letter-spacing: 2px; color: #F4EBDA; }
+  .merk span { display: block; }
+  .merk span:first-child { transform: scaleX(1.66); transform-origin: left; }
+  .merk .jaar { font-size: 38px; margin-top: 5px; }
+  .onderwerp { position: absolute; left: 470px; top: 120px; font-weight: 700; font-size: 68px; color: #F5C531; }
+  .regels { position: absolute; left: 472px; top: 220px; font-weight: 400; font-size: 21px; color: #8FE4B4; line-height: 2.1; }
+  .hoeksticker { position: absolute; top: 0; right: 0; width: 64px; height: 64px; background: #8FE4B4; display: flex; align-items: center; justify-content: center; }
+  .strip { position: absolute; left: 0; right: 0; bottom: 0; height: 74px; background: #F4EBDA; color: #2E1A5E; display: flex; align-items: center; justify-content: space-between; padding: 0 56px; }
+  .strip .fan { font-weight: 400; font-size: 14px; line-height: 1.7; }
+  .strip .site { font-weight: 700; font-size: 22px; }
+  #torens { position: absolute; right: 60px; bottom: 74px; width: 300px; height: 400px; }
+  .grain { position: absolute; inset: 0; z-index: 9; pointer-events: none; opacity: 0.24; mix-blend-mode: multiply; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E"); }
 </style>
 </head>
 <body>
-  <div class="inhoud">
-    <div class="boven">LOWLANDS 2026</div>
-    <h1>HET WEER</h1>
-    <div class="onder">DE VERWACHTING UIT 82 WEERBEREKENINGEN + ELKE 4 UUR VERS</div>
-    <span class="link">LOWLANDS.FESTIWEER.NL</span>
+  <div class="merk"><span>LOW</span><span>LANDS</span><span class="jaar">2026</span></div>
+  <div class="onderwerp">HET WEER</div>
+  <div class="regels">WO 19 T/M MA 24 AUG · BIDDINGHUIZEN<br>82 BEREKENINGEN · ELKE 4 UUR VERS</div>
+  <div class="hoeksticker"><svg width="24" height="29" viewBox="0 0 5 6"><g shape-rendering="crispEdges" fill="#2E1A5E"><rect x="2" y="0" width="1" height="1"/><rect x="1" y="1" width="3" height="1"/><rect x="0" y="2" width="5" height="3"/><rect x="1" y="5" width="3" height="1"/></g></svg></div>
+  <svg id="torens" viewBox="0 0 300 400"></svg>
+  <div class="strip">
+    <div class="fan">ONAFHANKELIJK FAN-PROJECT · NIET VERBONDEN AAN LOWLANDS OF MOJO</div>
+    <div class="site">LOWLANDS.FESTIWEER.NL</div>
   </div>
-  <svg class="spikes" viewBox="0 0 1200 52" preserveAspectRatio="none" id="sp"></svg>
+  <div class="grain"></div>
   <script>
-    const svg = document.getElementById('sp');
-    const n = 26, w = 1200 / n;
-    for (let i = 0; i < n; i++) {
-      const x = i * w, top = (i % 2 === 0) ? 0 : 52 * 0.42;
-      const p = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-      p.setAttribute('points', `${x},52 ${x + w / 2},${top} ${x + w},52`);
-      p.setAttribute('fill', '#CDB5DE');
-      svg.appendChild(p);
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.getElementById('torens');
+    const g = document.createElementNS(NS, 'g');
+    g.setAttribute('shape-rendering', 'crispEdges');
+    svg.appendChild(g);
+    function toren(cx, topY, baseY, baseW, accent) {
+      const stap = 16, n = Math.ceil((baseY - topY) / stap);
+      for (let i = 0; i < n; i++) {
+        const f = i / (n - 1);
+        let w = 10 + (baseW - 10) * f;
+        w = Math.max(10, Math.round(w / 5) * 5);
+        let fill = '#2E1A5E';
+        if (f < 0.11) fill = '#F5C531';
+        else if (f < 0.56) fill = '#F4EBDA';
+        else if (accent && f < 0.62) fill = '#F5C531';
+        const r = document.createElementNS(NS, 'rect');
+        r.setAttribute('x', Math.round(cx - w / 2)); r.setAttribute('y', topY + i * stap);
+        r.setAttribute('width', w); r.setAttribute('height', stap + 0.5);
+        r.setAttribute('fill', fill);
+        g.appendChild(r);
+      }
     }
+    toren(205, 5, 400, 120, true);
+    toren(75, 165, 400, 90, false);
   </script>
 </body>
 </html>

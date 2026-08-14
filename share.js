@@ -1,5 +1,5 @@
 // Deelbalk voor de webversie: Twitter-intent + Instagram story-graphic (1080x1920)
-// gegenereerd uit window.WEERDATA in de huisstijl. Alleen geladen door index.html.
+// gegenereerd uit window.WEERDATA in de pixelstijl van de poster. Alleen geladen door index.html.
 (function () {
   const D = window.WEERDATA;
   const SITE = 'https://lowlands.festiweer.nl';
@@ -40,7 +40,7 @@
 
   /* ---------- Instagram: story-graphic ---------- */
   async function laadIcoon(naam) {
-    const res = await fetch(`assets/icons/line-${naam}.svg`);
+    const res = await fetch(`assets/icons/pixel-${naam}.svg`);
     let svg = await res.text();
     // viewBox-only SVG's hebben geen intrinsieke maat; die is nodig voor drawImage
     svg = svg.replace('<svg ', '<svg width="512" height="512" ');
@@ -51,137 +51,132 @@
     return img;
   }
 
-  function spikeRij(ctx, W, yBasis, hoogte, kleur, n) {
-    const w = W / n;
-    ctx.fillStyle = kleur;
-    for (let i = 0; i < n; i++) {
-      const x = i * w, top = (i % 2 === 0) ? 0 : hoogte * 0.45;
-      ctx.beginPath();
-      ctx.moveTo(x, yBasis);
-      ctx.lineTo(x + w / 2, yBasis - hoogte + top);
-      ctx.lineTo(x + w, yBasis);
-      ctx.closePath(); ctx.fill();
+  function torens(ctx, rechtsX, baseY) {
+    function toren(cx, topY, baseW, accent) {
+      const stap = 24, n = Math.ceil((baseY - topY) / stap);
+      for (let i = 0; i < n; i++) {
+        const f = i / (n - 1);
+        let w = 14 + (baseW - 14) * f;
+        w = Math.max(14, Math.round(w / 7) * 7);
+        let fill = C('--donkerpaars');
+        if (f < 0.11) fill = C('--geel');
+        else if (f < 0.56) fill = C('--cream');
+        else if (accent && f < 0.62) fill = C('--geel');
+        ctx.fillStyle = fill;
+        ctx.fillRect(Math.round(cx - w / 2), topY + i * stap, w, stap + 1);
+      }
     }
+    toren(rechtsX - 90, baseY - 430, 150, true);
+    toren(rechtsX - 250, baseY - 300, 120, false);
   }
 
-  // sticker: geroteerde rechthoek met harde schaduw en rand, tekent inhoud via callback
-  function sticker(ctx, cx, cy, w, h, hoek, vulling, teken) {
+  function korrel(ctx, W, H) {
     ctx.save();
-    ctx.translate(cx, cy);
-    ctx.rotate(hoek * Math.PI / 180);
-    ctx.fillStyle = C('--schaduw');
-    ctx.fillRect(-w / 2 + 14, -h / 2 + 14, w, h);
-    ctx.fillStyle = vulling;
-    ctx.fillRect(-w / 2, -h / 2, w, h);
-    ctx.lineWidth = 6;
-    ctx.strokeStyle = C('--donkerpaars');
-    ctx.strokeRect(-w / 2 + 3, -h / 2 + 3, w - 6, h - 6);
-    teken(ctx, w, h);
+    ctx.globalAlpha = 0.045;
+    ctx.fillStyle = '#2A1850';
+    for (let i = 0; i < 9000; i++) {
+      ctx.fillRect(Math.random() * W, Math.random() * H, 1.4, 1.4);
+    }
     ctx.restore();
   }
 
-  function confetti(ctx) {
-    // vaste posities langs de randen, uit de buurt van tekst
-    const plus = [[95, 560], [985, 620], [70, 1080], [1010, 1180], [120, 1560], [960, 470]];
-    const drup = [[1000, 890], [85, 830], [950, 1500]];
-    ctx.font = '700 44px Silkscreen';
-    ctx.textAlign = 'center';
-    plus.forEach(([x, y], i) => {
-      ctx.fillStyle = [C('--mint'), C('--cream'), C('--lila')][i % 3];
-      ctx.fillText('+', x, y);
-    });
-    drup.forEach(([x, y]) => {
-      ctx.fillStyle = C('--mint');
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.quadraticCurveTo(x + 13, y + 18, x, y + 30);
-      ctx.quadraticCurveTo(x - 13, y + 18, x, y);
-      ctx.fill();
-    });
-  }
-
   async function maakStory() {
-    await document.fonts.load('700 100px Silkscreen');
-    await document.fonts.load('400 40px Silkscreen');
-    await document.fonts.load('700 36px "Schibsted Grotesk"');
+    await document.fonts.load("700 100px Silkscreen");
+    await document.fonts.load("400 40px Silkscreen");
+    await document.fonts.load("700 36px 'Schibsted Grotesk'");
+    await document.fonts.load("italic 500 27px 'Schibsted Grotesk'");
     const iconen = await Promise.all(D.groot.map((d) => laadIcoon(d.icon)));
 
     const W = 1080, H = 1920;
     const cv = document.createElement('canvas');
     cv.width = W; cv.height = H;
     const ctx = cv.getContext('2d');
-    const mid = W / 2;
+    ctx.imageSmoothingEnabled = false;
 
-    // sunset-gradient over de volle hoogte
+    // sunset-gradient zoals op de poster
     const gr = ctx.createLinearGradient(0, 0, 0, H);
-    gr.addColorStop(0, '#E8862F');
-    gr.addColorStop(0.45, C('--oranje-diep'));
-    gr.addColorStop(1, '#8A3220');
+    for (const [stop, kleur] of [[0, '#31255F'], [0.14, '#3B3078'], [0.30, '#41549B'], [0.46, '#6390B0'], [0.57, '#9DBDB4'], [0.68, '#D6C49F'], [0.79, '#ECAF6B'], [0.90, '#E5823A'], [1, '#DF6E28']]) {
+      gr.addColorStop(stop, kleur);
+    }
     ctx.fillStyle = gr;
     ctx.fillRect(0, 0, W, H);
 
-    // spikes-landschap onderin (twee dieptes)
-    spikeRij(ctx, W, H, 190, C('--lila'), 21);
-    spikeRij(ctx, W, H, 110, C('--donkerpaars'), 27);
+    const STRIP = 104; // cream strip onderin
+    torens(ctx, W - 40, H - STRIP);
 
-    confetti(ctx);
-
-    // kop
-    ctx.textAlign = 'center';
+    // wordmark linksboven; LOW uitgerekt zoals op de poster
     ctx.fillStyle = C('--cream');
-    ctx.font = '400 46px Silkscreen';
-    ctx.fillText('LOWLANDS 2026', mid, 150);
-    ctx.font = '700 152px Silkscreen';
-    ctx.fillStyle = C('--donkerpaars');
-    ctx.fillText('HET WEER', mid + 10, 330);
-    ctx.fillStyle = C('--paars');
-    ctx.fillText('HET WEER', mid, 320);
-    ctx.font = '400 32px Silkscreen';
-    ctx.fillStyle = C('--cream');
-    ctx.fillText('WO 19 T/M MA 24 AUGUSTUS + BIDDINGHUIZEN', mid, 415);
+    ctx.font = "700 76px Silkscreen";
+    ctx.save();
+    ctx.translate(64, 148);
+    ctx.scale(1.66, 1);
+    ctx.fillText('LOW', 0, 0);
+    ctx.restore();
+    ctx.fillText('LANDS', 64, 226);
+    ctx.font = "700 54px Silkscreen";
+    ctx.fillText('2026', 64, 296);
 
-    // verdict-sticker
-    sticker(ctx, mid, 545, 920, 116, -2.2, C('--lila'), (c, w2) => {
-      c.textAlign = 'center';
-      c.fillStyle = C('--rood');
-      c.font = '700 50px Silkscreen';
-      c.fillText(D.verdict.kop, 0, 18, w2 - 80);
-    });
+    // rechtsboven
+    ctx.textAlign = 'right';
+    ctx.fillStyle = C('--geel');
+    ctx.font = "700 40px Silkscreen";
+    ctx.fillText('HET WEER', W - 64, 120);
+    ctx.fillStyle = C('--mint');
+    ctx.font = "400 22px Silkscreen";
+    ctx.fillText('WO 19 T/M MA 24 AUG', W - 64, 176);
+    ctx.fillText('BIDDINGHUIZEN', W - 64, 222);
+    ctx.fillText('ELKE 4 UUR VERS', W - 64, 268);
 
-    // dag-stickers, versprongen en om en om gedraaid
-    const vullingen = [C('--cream'), C('--lila-licht'), '#D9F3E4'];
+    // verdict
+    ctx.textAlign = 'left';
+    ctx.fillStyle = C('--geel');
+    ctx.font = "700 42px Silkscreen";
+    ctx.fillText(D.verdict.kop, 64, 430, W - 128);
+
+    // dag-rijen met mint-scheidingslijnen
+    const rijY = [560, 900, 1240], rijH = 340;
     D.groot.forEach((d, i) => {
-      const cy = 810 + i * 300;
-      const cx = mid + (i === 1 ? 60 : -40);
-      const hoek = [-2, 2.2, -1.6][i];
-      sticker(ctx, cx, cy, 850, 250, hoek, vullingen[i], (c, w2, h2) => {
-        c.textAlign = 'left';
-        c.fillStyle = C('--rood');
-        c.font = '700 46px Silkscreen';
-        c.fillText(d.dag, -w2 / 2 + 50, -20);
-        c.fillStyle = C('--ink');
-        c.font = '700 31px "Schibsted Grotesk"';
-        c.fillText(`${d.kans}% kans op een bui`, -w2 / 2 + 50, 42);
-        c.font = '500 27px "Schibsted Grotesk"';
-        c.fillStyle = C('--muted');
-        c.fillText(d.zin, -w2 / 2 + 50, 86);
-        c.drawImage(iconen[D.groot.indexOf(d)], w2 / 2 - 460, -h2 / 2 + 45, 160, 160);
-        c.textAlign = 'right';
-        c.fillStyle = C('--paars');
-        c.font = '700 100px Silkscreen';
-        c.fillText(`${d.max}`, w2 / 2 - 100, 40);
-        c.font = '700 62px "Schibsted Grotesk"';
-        c.fillText('°', w2 / 2 - 42, -8);
-      });
+      const y = rijY[i];
+      if (i > 0) {
+        ctx.strokeStyle = 'rgba(143,228,180,0.5)';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(64, y - 34); ctx.lineTo(W - 64, y - 34); ctx.stroke();
+      }
+      // onderste rij ligt op het lichte deel van de gradient: donkere tekst
+      const licht = i === 2;
+      const accent = licht ? C('--donkerpaars') : C('--mint');
+      const basis = licht ? C('--donkerpaars') : C('--cream');
+      ctx.drawImage(iconen[i], 56, y + 10, 220, 220);
+      ctx.textAlign = 'left';
+      ctx.fillStyle = accent;
+      ctx.font = "700 34px Silkscreen";
+      ctx.fillText(d.dag, 320, y + 70);
+      ctx.fillStyle = basis;
+      ctx.font = "700 30px 'Schibsted Grotesk'";
+      ctx.fillText(`${d.kans}% kans op een bui`, 320, y + 130);
+      ctx.font = "italic 500 27px 'Schibsted Grotesk'";
+      ctx.fillStyle = licht ? 'rgba(42,24,80,0.85)' : 'rgba(244,235,218,0.85)';
+      ctx.fillText(d.zin, 320, y + 178);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = basis;
+      ctx.font = "700 110px Silkscreen";
+      ctx.fillText(`${d.max}`, W - 120, y + 160);
+      ctx.font = "700 60px 'Schibsted Grotesk'";
+      ctx.fillText('°', W - 84, y + 96);
     });
 
-    // link-sticker
-    sticker(ctx, mid, 1755, 830, 120, 1.8, C('--rood'), (c, w2) => {
-      c.textAlign = 'center';
-      c.fillStyle = C('--cream');
-      c.font = '700 44px Silkscreen';
-      c.fillText('LOWLANDS.FESTIWEER.NL', 0, 16, w2 - 70);
-    });
+    // cream strip onderin
+    ctx.fillStyle = C('--cream');
+    ctx.fillRect(0, H - STRIP, W, STRIP);
+    ctx.textAlign = 'left';
+    ctx.fillStyle = C('--donkerpaars');
+    ctx.font = "400 17px Silkscreen";
+    ctx.fillText('ONAFHANKELIJK FAN-PROJECT', 56, H - STRIP + 62);
+    ctx.textAlign = 'right';
+    ctx.font = "700 30px Silkscreen";
+    ctx.fillText('LOWLANDS.FESTIWEER.NL', W - 56, H - STRIP + 66);
+
+    korrel(ctx, W, H);
     return new Promise((ok) => cv.toBlob((b) => ok(b), 'image/png'));
   }
 

@@ -1,10 +1,9 @@
 /* Overrides voor de webversie (index.html); poster.html/PDF laadt dit niet. */
 html { -webkit-text-size-adjust: 100%; }
-body { background: var(--donkerpaars); }
+body { background: var(--nacht); }
 .page {
   width: 100%; max-width: 880px; height: auto; min-height: 100vh;
-  margin: 0 auto; box-shadow: 0 0 70px rgba(0, 0, 0, 0.4);
-  background: var(--cream);
+  margin: 0 auto; box-shadow: 0 0 70px rgba(0, 0, 0, 0.5);
 }
 
 /* Desktop: de poster is op printformaat ontworpen (11px basistekst), dus
@@ -16,32 +15,30 @@ body { background: var(--donkerpaars); }
   .page { zoom: 1.5; }
 }
 
-/* Deelbalk */
+/* Deelbalk in de pixelstijl van de poster */
 .deelbar {
-  position: fixed; right: 18px; bottom: 18px; z-index: 50;
+  position: fixed; right: 16px; bottom: 16px; z-index: 70;
   display: flex; align-items: center; gap: 10px;
-  background: var(--donkerpaars); border: 3px solid var(--schaduw);
-  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.35);
-  padding: 10px 14px;
+  background: var(--cream);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  padding: 9px 13px;
   zoom: 1 !important;
 }
-.deel-label { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 13px; color: var(--lila); }
+.deel-label { font-family: var(--f-pix); font-weight: 700; font-size: 12px; color: var(--donkerpaars); }
 .deel-knop {
-  border: none;
-  padding: 9px 12px; cursor: pointer; box-shadow: 3px 3px 0 var(--schaduw);
+  border: none; width: 36px; height: 36px; cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center;
 }
-.deel-knop svg { width: 18px; height: 18px; display: block; fill: #fff; }
-#deelTwitter { background: #1DA1F2; }
-#deelInsta { background: radial-gradient(circle at 30% 110%, #FEDA75, #FA7E1E 40%, #D62976 65%, #962FBF 85%, #4F5BD5); }
-.deel-knop:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--schaduw); }
+.deel-knop svg { width: 18px; height: 18px; display: block; fill: var(--cream); }
+#deelTwitter { background: var(--donkerpaars); }
+#deelInsta { background: var(--rood); }
+.deel-knop:active { transform: translateY(2px); }
 .deel-knop:disabled { opacity: 0.6; cursor: wait; }
-#deelInsta { background: var(--paars); }
 .deel-toast {
   position: fixed; left: 50%; bottom: 84px; transform: translateX(-50%) translateY(10px);
-  z-index: 51; max-width: 90vw;
-  background: var(--lila); color: var(--ink); border: 3px solid var(--donkerpaars);
-  box-shadow: 4px 4px 0 var(--schaduw);
+  z-index: 71; max-width: 90vw;
+  background: var(--cream); color: var(--ink);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
   font-size: 13px; font-weight: 500; padding: 10px 16px;
   opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s;
 }
@@ -49,39 +46,55 @@ body { background: var(--donkerpaars); }
 
 /* Mobiel: stapelen en tekst vergroten. */
 @media (max-width: 680px) {
-  .groot, .klein, .uitleg, .mm-grid { grid-template-columns: 1fr; }
-  .hero h1 { font-size: clamp(36px, 13vw, 63px); text-shadow: 3px 3px 0 var(--donkerpaars); }
-  .hero .boven { font-size: 13px; }
-  .hero .onder { font-size: 10px; }
-  .hero, .verdict, .dagen, .uitleg, .mmblok, footer { padding-left: 16px; padding-right: 16px; }
+  .kop { padding: 20px 16px 0; }
+  .merk { font-size: 32px; }
+  .merk .jaar { font-size: 23px; }
+  .kop-info { padding: 4px 40px 0 0; }
+  .kop-info .onderwerp { font-size: 12px; }
+  .kop-info .regels { font-size: 8px; line-height: 2; margin-top: 6px; }
+  .hoeksticker { width: 36px; height: 36px; }
+  .hoeksticker svg { width: 13px; height: 16px; }
 
-  .verdict .kop { font-size: 19px; }
-  .verdict p { font-size: 15px; max-width: none; }
+  .verdictblok { padding: 22px 16px 0; }
+  #verdictKop { font-size: 17px; line-height: 1.4; }
+  #verdictTekst { font-size: 15px; line-height: 1.55; }
 
-  .dagen h2 { font-size: 15px; }
-  .dagen h3 { font-size: 13px; }
-  .kaart .dag { font-size: 17px; }
-  .kaart .icon { width: 96px; height: 80px; }
-  .kaart .temp { font-size: 44px; }
-  .kaart .temp .gr { font-size: 34px; vertical-align: 9px; }
-  .kaart .nacht { font-size: 13px; }
-  .kaart .kans { font-size: 15px; }
-  .kaart .zin { font-size: 14px; }
-  .kaart .drops svg { width: 54px !important; height: 16px !important; }
+  .dagen { padding: 0 16px; }
+  .kolommen { grid-template-columns: 1fr; }
+  .kolom { padding: 18px 6px; }
+  .kolom + .kolom { border-left: none; border-top: 1px dashed rgba(143, 228, 180, 0.55); }
+  .kolom .dagnaam { font-size: 16px; }
+  .kolom .datum { font-size: 12px; }
+  .kolom .icon { width: 124px; height: 124px; }
+  .kolom .temp { font-size: 52px; }
+  .kolom .temp .gr { font-size: 30px; vertical-align: 13px; }
+  .kolom .nacht { font-size: 13px; }
+  .kolom .conditie { font-size: 10.5px; margin-top: 10px; }
+  .kolom .kans { font-size: 13.5px; }
+  .kolom .drops svg { width: 66px; height: 15px; }
 
-  .strook .icon { width: 64px; height: 60px; }
-  .strook .rol { font-size: 11px; }
-  .strook .feiten { font-size: 14px; }
-  .strook .zin { font-size: 12.5px; }
+  .grafieken { grid-template-columns: 1fr; gap: 22px; padding: 0 16px; }
+  .grafieken > div { min-width: 0; }
+  .grafieken h2 { font-size: 14px; }
+  .scrollwrap { overflow-x: auto; }
+  .scrollwrap svg { min-width: 540px; }
+  .mmlegende { font-size: 11.5px; gap: 4px 12px; }
+  .mmlegende .dr { width: 46px; height: 11px; }
+  .mmlegende .uitleg-mm { font-size: 10px; }
 
-  .uitleg h2, .mmblok h2 { font-size: 15px; }
-  .uitleg > div { overflow-x: auto; }
-  .uitleg svg { min-width: 560px; }
-  .mm-intro { font-size: 13px; }
-  .mmblok .kopregel { flex-direction: column; gap: 4px; }
-  .mm-item .mm { font-size: 13px; }
-  .mm-item .txt { font-size: 13px; }
-  .mm-item .dr { width: 66px; height: 17px; }
+  .onder { grid-template-columns: 1fr; grid-template-rows: none; row-gap: 20px; padding: 0 16px 12px; }
+  .onder h2 { font-size: 14px; }
+  .reisrij { gap: 12px; padding: 6px 0 8px; }
+  .reisrij img { width: 38px; height: 38px; }
+  .reisrij .rol { font-size: 10.5px; }
+  .reisrij .feiten { font-size: 13px; }
+  .reisrij .zin { font-size: 12px; }
+  .buienregel { grid-column: 1; font-size: 12px; margin-top: 4px; }
+  #torens { position: static; grid-column: 1; justify-self: end; width: 150px; height: 230px; margin: -10px 4px -12px 0; }
 
-  footer { font-size: 11px; }
+  footer { padding: 12px 16px 10px; }
+  footer .rij { flex-wrap: wrap; }
+  footer .fan { font-size: 8px; }
+  footer .site { font-size: 10px; }
+  footer .uitleg { font-size: 9.5px; }
 }

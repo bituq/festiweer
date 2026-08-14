@@ -1,6 +1,6 @@
 # lowlands-weer
 
-Weerposter en -site voor Lowlands in de designtaal van het festival (pixel-typo, spikes, oranje/paars/lila). Gebouwd uit de ensemble-runs van ECMWF (51 leden) en GFS (31 leden) via Open-Meteo.
+Weerposter en -site voor Lowlands in de designtaal van het festival: een sunset-gradient van nachtpaars naar oranje met pixel-typografie, pixel-weericonen, de festivaltorens als silhouet en een vleugje riso-korrel. Gebouwd uit de ensemble-runs van ECMWF (51 leden) en GFS (31 leden) via Open-Meteo.
 
 ## Hoe het werkt
 
@@ -21,8 +21,8 @@ GitHub Actions (`.github/workflows/update.yml`) draait elke 4 uur: verse data op
 
 ## Iconen
 
-De weericonen zijn [Meteocons](https://github.com/basmilius/weather-icons) van Bas Milius (MIT), lokaal in `assets/icons/`.
+De weericonen (`assets/icons/pixel-*.svg`) zijn eigen pixel-art op een 24x24-grid (rects met `shape-rendering: crispEdges`). `fetch-data.ts` kiest per dag een van de vijf varianten (clear-day, partly-cloudy-day, partly-cloudy-day-drizzle, drizzle, rain).
 
 ## Fonts en kleuren
 
-Silkscreen (pixel, display) + Schibsted Grotesk (lopende tekst), via Google Fonts. Let op: Silkscreen heeft geen `°`-glyph, daarom zit het gradenteken in een aparte `span` met de bodytekst-font. Palet komt van lowlands.nl 2026: oranje sunset, paars, lila, rood, mint, cream.
+Silkscreen (pixel, display) + Schibsted Grotesk (lopende tekst), via Google Fonts. Let op: Silkscreen heeft geen `°`-glyph, daarom zit het gradenteken in een aparte `span` met de bodytekst-font. Palet komt van lowlands.nl 2026 (paars, mint, geel, cream, oranje) op een doorlopende sunset-gradient; de korrel is een SVG-feTurbulence-tile als data-URI en de torens worden in JS als gestapelde pixel-rects opgebouwd.
