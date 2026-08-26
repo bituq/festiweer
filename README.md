@@ -4,15 +4,20 @@ Weerposter en -site voor Lowlands in de designtaal van het festival: een sunset-
 
 ## Hoe het werkt
 
-- `scripts/fetch-data.ts` haalt de ensembles op, rekent alles door (medianen, p10/p90-band, regenkansen) en leidt de teksten, iconen en druppelmeters af via regels. Output: `data.js` (`window.WEERDATA`).
-- `poster.html` is de enige bron voor het ontwerp; hij leest alles uit `data.js`.
-- `scripts/build-site.ts` genereert daaruit `index.html` (webversie: viewport-meta + `web.css` responsive overrides).
+- `scripts/fetch-data.ts` is de orkestratie: modeldata ophalen, doorrekenen, `data.js` (`window.WEERDATA`) schrijven. De inhoud zit in `scripts/lib/`:
+  - `editie.ts` — alle editie-config (coördinaten, datums, rollen); daglabels worden uit de datums afgeleid. Volgende editie = alleen dit bestand aanpassen.
+  - `openmeteo.ts` — al het API-verkeer: de ensembles, KNMI Harmonie en de biasmeting.
+  - `statistiek.ts` — ensemble-kwantielen en de kanskalibratie (pure functies).
+  - `weerdata.ts` — van modeldata naar cijfers, teksten, iconen, verdict en kaarten (pure functies).
+- `poster.html` (markup) + `poster.css` (stijl) + `poster.js` (rendert alles uit `data.js`) vormen samen het ontwerp.
+- `scripts/build-site.ts` genereert daaruit `index.html` (webversie: viewport-meta, OG-tags, `web.css` responsive overrides, `share.js` deelbalk).
 - `scripts/render.ts` rendert de A4-PDF (leunt op de Puppeteer-install van de pdf-generator skill in `~/.claude/skills/pdf-generator`).
 
 ```sh
 bun scripts/fetch-data.ts                                        # verse cijfers
 bun scripts/build-site.ts                                        # index.html
 bun scripts/render.ts poster.html lowlands-2026-weer.pdf preview.png  # PDF
+bun test                                                         # unit tests (scripts/lib/__tests__)
 ```
 
 ## Website
@@ -21,7 +26,7 @@ GitHub Actions (`.github/workflows/update.yml`) draait elke 4 uur: verse data op
 
 ## Iconen
 
-De weericonen (`assets/icons/pixel-*.svg`) zijn eigen pixel-art op een 24x24-grid (rects met `shape-rendering: crispEdges`). `fetch-data.ts` kiest per dag een van de vijf varianten (clear-day, partly-cloudy-day, partly-cloudy-day-drizzle, drizzle, rain).
+De weericonen (`assets/icons/pixel-*.svg`) zijn eigen pixel-art op een 24x24-grid (rects met `shape-rendering: crispEdges`). `scripts/lib/weerdata.ts` kiest per dag een van de vijf varianten (clear-day, partly-cloudy-day, partly-cloudy-day-drizzle, drizzle, rain).
 
 ## Fonts en kleuren
 

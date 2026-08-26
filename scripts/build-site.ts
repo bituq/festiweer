@@ -22,7 +22,10 @@ html = html.replace(
   '<meta charset="utf-8">',
   '<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌦</text></svg>">\n' + OG
 );
-html = html.replace('</style>', '</style>\n<link rel="stylesheet" href="web.css">');
+html = html.replace(
+  '<link rel="stylesheet" href="poster.css">',
+  '<link rel="stylesheet" href="poster.css">\n<link rel="stylesheet" href="web.css">'
+);
 html = html.replace('</body>', '<script src="share.js" defer></script>\n</body>');
 await Bun.write(doel, html);
 console.log('index.html gegenereerd uit poster.html');
