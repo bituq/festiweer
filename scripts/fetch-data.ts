@@ -9,6 +9,13 @@ const DAGNAMEN = ['woensdag', 'donderdag', 'vrijdag', 'zaterdag', 'zondag', 'maa
 
 const VARS = 'temperature_2m_max,temperature_2m_min,precipitation_sum,wind_gusts_10m_max';
 
+// Na afloop van het festival heeft de forecast-API de festivaldagen niet meer;
+// dan blijft de laatste data.js staan in plaats van dat de build crasht.
+if (new Date().toISOString().slice(0, 10) > END) {
+  console.log(`festival voorbij (${END}); bestaande data.js blijft staan`);
+  process.exit(0);
+}
+
 async function haalModel(model: string) {
   const url = `https://ensemble-api.open-meteo.com/v1/ensemble?latitude=${LAT}&longitude=${LON}&daily=${VARS}&models=${model}&timezone=Europe%2FAmsterdam&start_date=${START}&end_date=${END}`;
   const res = await fetch(url);

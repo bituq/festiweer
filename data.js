@@ -1,6 +1,6 @@
 window.WEERDATA = {
-  "runAt": "2026-08-13T07:05:44.070Z",
-  "runAtText": "13 augustus 2026, 09:05",
+  "runAt": "2026-08-22T04:46:26.921Z",
+  "runAtText": "22 augustus 2026, 06:46",
   "leden": 82,
   "days": [
     "wo 19",
@@ -12,102 +12,102 @@ window.WEERDATA = {
   ],
   "chartTemp": {
     "best": [
-      21,
-      20.6,
-      20.4,
-      21.2,
-      21,
-      20.9
+      19.3,
+      20.1,
+      19.6,
+      18.6,
+      18.9,
+      21.2
     ],
     "lo": [
-      18.4,
       18.1,
-      17.1,
-      17.3,
+      18.3,
+      18.9,
       18,
-      17
+      17.6,
+      19.1
     ],
     "hi": [
-      23.4,
-      22.9,
-      23.5,
-      27,
-      27.7,
-      26.4
+      20.8,
+      21.5,
+      20.5,
+      19.5,
+      20.4,
+      23.6
     ]
   },
   "chartRain": {
     "med": [
-      2.8,
-      2,
-      1.6,
-      1.6,
-      1.6,
-      1.2
+      7.8,
+      8.4,
+      3.3,
+      3,
+      1.3,
+      0.1
     ],
     "p90": [
-      11,
-      7.4,
-      6.6,
-      8.2,
-      7.4,
-      10.8
+      11.5,
+      12.4,
+      5.1,
+      3.7,
+      2.1,
+      0.4
     ]
   },
   "verdict": {
     "kop": "GEEN HITTE, GEEN NOODWEER",
-    "tekst": "Overdag rond de 21 graden, af en toe een bui. De meeste regen valt vóór het festival, op woensdag. De festivaldagen zelf zijn meestal droog, met hooguit een buitje. Maandag, bij het afbreken, kan het weer nat worden. Dit zeggen 82 weerberekeningen, en ze zeggen bijna allemaal hetzelfde."
+    "tekst": "Overdag rond de 20 graden, af en toe een bui. De meeste regen valt vóór het festival, op donderdag. Ook op de festivaldagen is een bui goed mogelijk. Dit zeggen 82 weerberekeningen, en ze zeggen bijna allemaal hetzelfde."
   },
   "groot": [
     {
       "dag": "VR 21",
-      "icon": "partly-cloudy-day-drizzle",
+      "icon": "rain",
       "max": 20,
       "min": 13,
-      "kans": 57,
-      "drops": 2,
-      "zin": "hooguit even schuilen"
+      "kans": 100,
+      "drops": 3,
+      "zin": "reken op een paar buien"
     },
     {
       "dag": "ZA 22",
-      "icon": "partly-cloudy-day-drizzle",
-      "max": 21,
+      "icon": "rain",
+      "max": 19,
       "min": 12,
-      "kans": 63,
-      "drops": 2,
-      "zin": "hooguit even schuilen"
+      "kans": 100,
+      "drops": 3,
+      "zin": "reken op een paar buien"
     },
     {
       "dag": "ZO 23",
-      "icon": "partly-cloudy-day-drizzle",
-      "max": 21,
+      "icon": "drizzle",
+      "max": 19,
       "min": 13,
-      "kans": 61,
+      "kans": 78,
       "drops": 2,
-      "zin": "hooguit even schuilen"
+      "zin": "grote kans op een bui"
     }
   ],
   "klein": [
     {
       "rol": "OPBOUW · WO 19",
       "icon": "rain",
-      "max": 21,
-      "kans": 76,
-      "zin": "reken op een paar buien, en stevige wind: zet alles goed vast"
+      "max": 19,
+      "kans": 100,
+      "zin": "dikke kans op regen"
     },
     {
       "rol": "AANKOMST · DO 20",
       "icon": "rain",
-      "max": 21,
-      "kans": 80,
-      "zin": "dikke kans op regen"
+      "max": 20,
+      "kans": 100,
+      "zin": "dikke kans op regen, en stevige wind: zet alles goed vast"
     },
     {
       "rol": "NAAR HUIS · MA 24",
-      "icon": "partly-cloudy-day-drizzle",
+      "icon": "clear-day",
       "max": 21,
-      "kans": 57,
-      "zin": "kans op een buitje"
+      "kans": 0,
+      "zin": "waarschijnlijk droog"
     }
   ]
 };
