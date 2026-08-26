@@ -1,6 +1,6 @@
 # lowlands-weer
 
-Weerposter en -site voor Lowlands in de designtaal van het festival: een sunset-gradient van nachtpaars naar oranje met pixel-typografie, pixel-weericonen, de festivaltorens als silhouet en een vleugje riso-korrel. Gebouwd uit de ensemble-runs van ECMWF (51 leden) en GFS (31 leden) via Open-Meteo.
+Weerposter en -site voor Lowlands in de designtaal van het festival: een sunset-gradient van nachtpaars naar oranje met pixel-typografie, pixel-weericonen, de festivaltorens als silhouet en een vleugje riso-korrel. Gebouwd uit de ensemble-runs van ECMWF (51 leden) en GFS (31 leden) via Open-Meteo. Sinds de verificatie van 2026 komt de temperatuur uit de ECMWF-leden met een lopende biascorrectie (previous-runs vs ERA5-archief) en neemt KNMI Harmonie de laatste 48 uur over; de regenkans komt uit alle 82 leden en gaat door een lichte kalibratiecurve. GFS bleek die editie structureel 2-3° te warm en telt daarom niet meer mee in de temperatuur.
 
 ## Hoe het werkt
 
