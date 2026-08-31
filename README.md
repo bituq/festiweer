@@ -5,7 +5,7 @@ Weerposters en -sites voor festivals, elk in de designtaal van het festival zelf
 ## Festivals
 
 - **lowlands** — sunset-gradient van nachtpaars naar oranje, Silkscreen-pixeltypografie, eigen pixel-weericonen, de festivaltorens als silhouet (palet van lowlands.nl 2026).
-- **draaimolen** — naar de 2026-campagne op draaimolen.nu: teal-groen dat oplost in olijfgoud, brede vette grotesk in outline met verspringende letters (Archivo Expanded als vrije stand-in voor hun Druk Wide) met Inter, en een eigen indeling: dagbanden, een uurlijks meteogram en de dennen-skyline met glas-orb over de volle breedte.
+- **draaimolen** — naar de 2026-campagne op draaimolen.nu: teal-groen dat oplost in olijfgoud, brede vette grotesk in outline met verspringende letters (Archivo Expanded als vrije stand-in voor hun Druk Wide) met Inter, en een eigen indeling: dagbanden, een uurlijks meteogram, een AI-gegenereerd mistig dennenbos (`bos.png`) en de glas-orb als WebGL-shader die de achtergrond echt breekt en spiegelt (met nevel-achtergrondshader; alles met statische fallbacks bij reduced-motion of zonder WebGL).
 
 ## Hoe het werkt
 

@@ -48,6 +48,10 @@ async function bouwFestival(editie: Editie) {
   // gedeelde engine + festival-eigen bestanden
   for (const f of ['poster.css', 'poster.js', 'share.js', 'web.css']) await kopieer(root(`shared/${f}`), root(`${uit}/${f}`));
   for (const f of ['theme.css', 'theme.js', 'data.js']) await kopieer(root(`festivals/${editie.slug}/${f}`), root(`${uit}/${f}`));
+  for (const f of ['bos.png']) {
+    const bron = root(`festivals/${editie.slug}/${f}`);
+    if (await Bun.file(bron).exists()) await kopieer(bron, root(`${uit}/${f}`));
+  }
   const og = root(`festivals/${editie.slug}/og.png`);
   if (await Bun.file(og).exists()) await kopieer(og, root(`${uit}/og.png`));
 
@@ -140,7 +144,7 @@ ${kaartStijlen}
   <header>
     ${ensembleLijnen()}
     <h1>festi<b>weer</b></h1>
-    <div class="sub">Festivalweer uit de ensembles: tientallen weerberekeningen per festival, elke 4 uur ververst, in de designtaal van het festival zelf.</div>
+    <div class="sub">Festivalweer uit de ensembles: tientallen weerberekeningen per festival, elke 4 uur ververst.</div>
   </header>
   <div class="kaarten">${kaarten}
   </div>

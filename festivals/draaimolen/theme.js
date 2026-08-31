@@ -1,8 +1,8 @@
 // Festival-eigen tekenwerk voor Draaimolen, naar de 2026-campagne: een
-// procedureel gegenereerde dennen-skyline (mistige achterrij + donkere
-// voorgrond) met de glas-orb als echte WebGL-shader (SVG-fallback), de
-// teal-naar-goud gradient en het brede DRAAI/MOLEN-wordmark in outline
-// (Archivo Expanded). Geladen vóór poster.js/share.js; die lezen window.FESTIVAL.
+// AI-gegenereerd mistig dennenbos (bos.png, transparante lucht) met de
+// glas-orb als WebGL-shader die de echte achtergrond breekt en spiegelt,
+// een levende nevel-achtergrond, en het brede DRAAI/MOLEN-wordmark in
+// outline (Archivo Expanded). Geladen vóór poster.js/share.js.
 window.FESTIVAL = {
   gradient: [[0, '#071110'], [0.11, '#0C201C'], [0.24, '#123129'], [0.35, '#1C4A3E'], [0.42, '#2E6152'], [0.50, '#5D8168'], [0.58, '#93997B'], [0.68, '#B7AF7E'], [0.78, '#D2C58B'], [0.88, '#E1D6A0'], [1, '#EDE4B6']],
   lichtVanaf: 0.56,
@@ -17,106 +17,107 @@ window.FESTIVAL = {
     ctx.fontStretch = 'normal';
   },
 
-  /* ---------- het bos: procedureel, in een lokaal 760x150-vlak ---------- */
-  orb: { cx: 590, cy: 38, r: 32 },
-  bos: (function () {
-    let z = 20260905 >>> 0;
-    const rnd = () => ((z = (z * 1664525 + 1013904223) >>> 0) / 2 ** 32);
-    const laag = (hMin, hMax, stapMin, stapMax) => {
-      const bomen = [];
-      for (let x = -14; x < 776; x += stapMin + rnd() * (stapMax - stapMin)) {
-        const h = hMin + rnd() * (hMax - hMin);
-        bomen.push([Math.round(x + rnd() * 8), Math.round(h), Math.round(h * 0.2 + 4 + rnd() * 5)]);
-      }
-      return bomen;
-    };
-    // achterrij in de nevel, voorgrond vol donker
-    return [
-      { alpha: 0.3, bomen: laag(46, 98, 20, 38) },
-      { alpha: 1, bomen: laag(60, 148, 30, 58) },
-    ];
-  })(),
-  denLagen(cx, h, hw) {
-    const top = 150 - h;
-    return [
-      [[cx, top], [cx - hw * 0.55, top + h * 0.5], [cx + hw * 0.55, top + h * 0.5]],
-      [[cx, top + h * 0.26], [cx - hw * 0.8, top + h * 0.78], [cx + hw * 0.8, top + h * 0.78]],
-      [[cx, top + h * 0.52], [cx - hw, 150], [cx + hw, 150]],
-    ];
-  },
+  // bos.png is 1088x364; de orb staat in beeld-coördinaten en steekt boven
+  // de boomtoppen uit
+  BEELD: { b: 1088, h: 364 },
+  orb: { cx: 800, cy: 108, r: 110 },
 
-  silhouetSvg(svg, C, el) {
-    for (const { alpha, bomen } of this.bos) {
-      const g = el(svg, 'g', { fill: C('--donker'), opacity: alpha });
-      for (const [cx, h, hw] of bomen) {
-        for (const punten of this.denLagen(cx, h, hw)) {
-          el(g, 'polygon', { points: punten.map((p) => p.join(',')).join(' ') });
-        }
+  // kleur van de pagina-gradient op hoogte v (0 = boven, 1 = onder)
+  kleurBij(v) {
+    const st = this.gradient;
+    if (v <= st[0][0]) return st[0][1];
+    for (let i = 1; i < st.length; i++) {
+      if (v <= st[i][0]) {
+        const [v0, k0] = st[i - 1], [v1, k1] = st[i];
+        const t = (v - v0) / (v1 - v0);
+        const c0 = [1, 3, 5].map((j) => parseInt(k0.slice(j, j + 2), 16));
+        const c1 = [1, 3, 5].map((j) => parseInt(k1.slice(j, j + 2), 16));
+        return `rgb(${c0.map((c, j) => Math.round(c + (c1[j] - c) * t)).join(',')})`;
       }
     }
-    if (!this.monteerOrb(svg.parentElement)) this.orbFallbackSvg(svg, C, el);
+    return st[st.length - 1][1];
   },
 
-  orbFallbackSvg(svg, C, el) {
-    const defs = el(svg, 'defs');
-    const grad = el(defs, 'radialGradient', { id: 'orbGrad', cx: '38%', cy: '32%', r: '75%' });
-    el(grad, 'stop', { offset: '0%', 'stop-color': C('--licht'), 'stop-opacity': 0.95 });
-    el(grad, 'stop', { offset: '45%', 'stop-color': C('--accent'), 'stop-opacity': 0.45 });
-    el(grad, 'stop', { offset: '100%', 'stop-color': C('--accent'), 'stop-opacity': 0.1 });
+  // het silhouet is het bos-beeld zelf; hier komt alleen de orb bij
+  silhouetSvg(imgEl) {
+    if (!this.monteerOrb(imgEl)) this.orbFallbackCss(imgEl);
+  },
+
+  maakOrbWrap(imgEl) {
+    const { b, h } = this.BEELD;
+    const wrap = document.createElement('div');
+    wrap.className = 'orbwrap';
+    wrap.style.cssText = `position:absolute;left:0;right:0;bottom:0;aspect-ratio:${b}/${h};pointer-events:none;`;
+    imgEl.parentElement.appendChild(wrap);
+    return wrap;
+  },
+  orbPlaatsing(elt) {
+    const { b, h } = this.BEELD;
     const { cx, cy, r } = this.orb;
-    el(svg, 'circle', { cx, cy, r, fill: 'url(#orbGrad)' });
-    el(svg, 'circle', { cx, cy, r, fill: 'none', stroke: C('--licht'), 'stroke-opacity': 0.6, 'stroke-width': 1 });
+    const maat = r * 2.3;
+    elt.style.cssText += `position:absolute;left:${((cx - maat / 2) / b) * 100}%;top:${((cy - maat / 2) / h) * 100}%;width:${(maat / b) * 100}%;aspect-ratio:1;`;
   },
 
-  /* ---------- de orb als fragmentshader ---------- */
-  // Raymarched-achtige glasbol in schermruimte: sfeer-normaal uit de cirkel,
-  // fbm-swirl in campagnekleuren binnenin, fresnel-rand en een spotje.
-  // De wrapper ligt exact over het silhouet (zelfde 760x150-verhouding),
-  // dus de positionering is puur procentueel en responsive.
-  monteerOrb(container) {
+  orbFallbackCss(imgEl) {
+    const wrap = this.maakOrbWrap(imgEl);
+    const bol = document.createElement('div');
+    this.orbPlaatsing(bol);
+    bol.style.cssText += 'border-radius:50%;background:radial-gradient(circle at 35% 30%, rgba(238,238,238,0.9), rgba(143,208,172,0.35) 45%, rgba(143,208,172,0.08) 75%);border:1px solid rgba(238,238,238,0.55);';
+    wrap.appendChild(bol);
+  },
+
+  /* ---------- de orb als fragmentshader met echte refractie ---------- */
+  // De shader krijgt een wereld-texture mee: de pagina-gradient rond de orb
+  // met het bos erin getekend. De bol keert dat beeld om (fisheye-refractie
+  // met chromatische aberratie per kanaal), spiegelt de wereld op de rand
+  // (fresnel) en wiebelt subtiel als vloeibaar glas.
+  monteerOrb(imgEl) {
+    let wrap = null;
     try {
       if (this.__orbCanvas) return true;
-      // reduced-motion (ook de print-render): statische SVG-orb in plaats van de shader
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
       const cv = document.createElement('canvas');
       const gl = cv.getContext('webgl', { alpha: true, premultipliedAlpha: true, preserveDrawingBuffer: true });
       if (!gl) return false;
 
       const fs = `precision mediump float;
-uniform float t; uniform vec2 res;
+uniform float t; uniform vec2 res; uniform sampler2D wereld;
 float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float noise(vec2 p){
   vec2 i = floor(p), f = fract(p);
   vec2 u = f * f * (3.0 - 2.0 * f);
   return mix(mix(hash(i), hash(i + vec2(1, 0)), u.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), u.x), u.y);
 }
-float fbm(vec2 p){
-  float v = 0.0, a = 0.5;
-  for (int i = 0; i < 4; i++) { v += a * noise(p); p = p * 2.03 + 11.3; a *= 0.5; }
-  return v;
-}
 void main(){
-  vec2 uv = (gl_FragCoord.xy - 0.5 * res) / (0.44 * res.y);
+  vec2 uv = (gl_FragCoord.xy - 0.5 * res) / (0.46 * res.y);
+  uv.y = -uv.y; // beeldruimte: y omlaag, zoals de texture
   float r = length(uv);
   float z = sqrt(max(0.0, 1.0 - r * r));
-  vec3 n = normalize(vec3(uv, max(z, 0.02)));
-  // binnenwereld: trage swirl van vervaagde campagnekleuren, brekend naar de rand
-  vec2 p = uv * (1.35 - 0.55 * z);
-  float a = t * 0.05;
-  p = mat2(cos(a), -sin(a), sin(a), cos(a)) * p;
-  float f1 = fbm(p * 2.1 + vec2(0.0, t * 0.04));
-  float f2 = fbm(p * 3.2 - vec2(t * 0.03, 1.7));
-  vec3 kleur = mix(vec3(0.16, 0.36, 0.29), vec3(0.56, 0.82, 0.67), smoothstep(0.32, 0.72, f1));
-  kleur = mix(kleur, vec3(0.70, 0.24, 0.15), smoothstep(0.58, 0.88, f2) * 0.55);
-  kleur = mix(kleur, vec3(0.91, 0.79, 0.42), smoothstep(0.62, 0.92, fbm(p * 1.6 + 3.7)) * 0.45);
-  kleur *= 0.7 + 0.5 * z;
-  // fresnel-rand en spotje linksboven
-  float fres = pow(1.0 - z, 2.6);
-  kleur += vec3(0.93, 0.93, 0.90) * fres * 0.6;
-  float spec = pow(max(dot(n, normalize(vec3(-0.5, 0.6, 0.62))), 0.0), 60.0);
-  kleur += vec3(1.0) * spec;
-  float alfa = smoothstep(1.0, 0.965, r) * (0.55 + 0.45 * fres + 0.5 * z);
-  alfa = min(alfa, 1.0);
+  // vloeibaar glas: de normaal wiebelt traag, het sterkst aan de rand
+  float w1 = noise(uv * 2.6 + t * 0.12) - 0.5;
+  float w2 = noise(uv * 3.4 - t * 0.09 + 7.3) - 0.5;
+  vec3 n = normalize(vec3(uv + vec2(w1, w2) * 0.07 * (1.0 - z), max(z, 0.03)));
+  vec3 kijk = vec3(0.0, 0.0, -1.0);
+  // refractie per kanaal: de bol keert de wereld om, elk kanaal breekt net anders
+  vec3 kleur;
+  for (int k = 0; k < 3; k++) {
+    vec3 br = refract(kijk, n, 0.60 + float(k) * 0.025);
+    vec2 suv = -uv * (0.62 - 0.30 * z) + br.xy * 0.42;
+    vec2 co = clamp(vec2(0.5) + suv * 0.5, 0.01, 0.99);
+    vec4 s = texture2D(wereld, co);
+    kleur[k] = k == 0 ? s.r : (k == 1 ? s.g : s.b);
+  }
+  // spiegeling van de wereld op de rand
+  vec3 rf = reflect(kijk, n);
+  vec2 rco = clamp(vec2(0.5) + rf.xy * 0.5, 0.01, 0.99);
+  vec3 refl = texture2D(wereld, rco).rgb;
+  float fres = pow(1.0 - z, 3.0);
+  kleur = mix(kleur, refl, fres * 0.65);
+  // glasrand en spotje linksboven
+  kleur += vec3(0.92, 0.93, 0.89) * fres * 0.3;
+  float spec = pow(max(dot(n, normalize(vec3(-0.45, -0.55, 0.7))), 0.0), 90.0);
+  kleur += vec3(0.95) * spec;
+  float alfa = smoothstep(1.0, 0.985, r) * 0.97;
   gl_FragColor = vec4(kleur * alfa, alfa);
 }`;
       const maak = (type, src) => {
@@ -141,18 +142,56 @@ void main(){
       const uT = gl.getUniformLocation(prog, 't');
       const uR = gl.getUniformLocation(prog, 'res');
 
+      // de wereld-texture: gradient + bos rond de orb
+      const { b, h } = this.BEELD;
       const { cx, cy, r } = this.orb;
-      const maat = r * 2.5; // beetje lucht voor de rand
-      const wrap = document.createElement('div');
-      wrap.className = 'orbwrap';
-      wrap.style.cssText = 'position:absolute;left:0;right:0;bottom:0;aspect-ratio:760/150;pointer-events:none;';
-      cv.style.cssText = `position:absolute;left:${((cx - maat / 2) / 760) * 100}%;top:${((cy - maat / 2) / 150) * 100}%;width:${(maat / 760) * 100}%;aspect-ratio:1;`;
-      wrap.appendChild(cv);
-      container.appendChild(wrap);
+      const straal = r * 2.6;
+      const tex2d = document.createElement('canvas');
+      tex2d.width = tex2d.height = 512;
+      const tctx = tex2d.getContext('2d');
+      const glTex = gl.createTexture();
+      wrap = this.maakOrbWrap(imgEl);
+      const vulTexture = () => {
+        // verticale band van de pagina-gradient rond de orb (zoom-bestendig via ratio's)
+        let v0 = 0.78, v1 = 1.02;
+        const page = document.querySelector('.page');
+        if (page) {
+          const pr = page.getBoundingClientRect();
+          const wr = wrap.getBoundingClientRect();
+          const sch = wr.width / b;
+          const yC = wr.top + cy * sch;
+          v0 = (yC - straal * sch - pr.top) / pr.height;
+          v1 = (yC + straal * sch - pr.top) / pr.height;
+        }
+        const g = tctx.createLinearGradient(0, 0, 0, 512);
+        for (let i = 0; i <= 24; i++) g.addColorStop(i / 24, this.kleurBij(v0 + ((v1 - v0) * i) / 24));
+        tctx.fillStyle = g;
+        tctx.fillRect(0, 0, 512, 512);
+        // het bos erin, op schaal
+        const T = 512 / (2 * straal);
+        if (imgEl.complete && imgEl.naturalWidth) {
+          tctx.drawImage(imgEl, (0 - (cx - straal)) * T, (0 - (cy - straal)) * T, b * T, h * T);
+        }
+        gl.bindTexture(gl.TEXTURE_2D, glTex);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tex2d);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      };
 
-      const px = Math.max(256, Math.round(maat * 1.6 * Math.min(2, window.devicePixelRatio || 1)));
+      this.orbPlaatsing(cv);
+      wrap.appendChild(cv);
+      const px = 512;
       cv.width = px; cv.height = px;
       gl.viewport(0, 0, px, px);
+      gl.uniform1i(gl.getUniformLocation(prog, 'wereld'), 0);
+      gl.activeTexture(gl.TEXTURE0);
+
+      vulTexture();
+      if (!imgEl.complete) imgEl.addEventListener('load', vulTexture, { once: true });
+      addEventListener('resize', vulTexture);
+
       const teken = (ms) => {
         gl.uniform1f(uT, ms / 1000);
         gl.uniform2f(uR, px, px);
@@ -160,20 +199,19 @@ void main(){
         gl.clear(gl.COLOR_BUFFER_BIT);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       };
-      // adaptief: bij prefers-reduced-motion (ook de print-render) of trage
-      // software-WebGL blijft het één statisch frame
+      // adaptief: op trage software-WebGL blijft het één statisch frame
       teken(performance.now());
       const t0 = performance.now();
       teken(t0);
       gl.finish();
-      const stil = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (!stil && performance.now() - t0 < 40) {
+      if (performance.now() - t0 < 40) {
         const lus = (ms) => { teken(ms); requestAnimationFrame(lus); };
         requestAnimationFrame(lus);
       }
       this.__orbCanvas = cv;
       return true;
     } catch {
+      if (wrap) wrap.remove();
       return false;
     }
   },
@@ -256,10 +294,10 @@ void main(){
 
       pageEl.insertBefore(cv, pageEl.firstChild);
       const maat = () => {
-        const w = pageEl.clientWidth || 794, h = pageEl.clientHeight || 1123;
-        const sc = Math.min(1, Math.sqrt(700000 / (w * h))); // cap ~0,7 Mpx: nevel heeft geen scherpte nodig
+        const w = pageEl.clientWidth || 794, hh = pageEl.clientHeight || 1123;
+        const sc = Math.min(1, Math.sqrt(700000 / (w * hh))); // nevel heeft geen scherpte nodig
         cv.width = Math.max(2, Math.round(w * sc));
-        cv.height = Math.max(2, Math.round(h * sc));
+        cv.height = Math.max(2, Math.round(hh * sc));
         gl.viewport(0, 0, cv.width, cv.height);
       };
       maat();
@@ -269,14 +307,11 @@ void main(){
         gl.uniform2f(uR, cv.width, cv.height);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       };
-      // adaptief: bij prefers-reduced-motion (ook de print-render) of trage
-      // software-WebGL blijft het één statisch frame
       teken(performance.now());
       const t0 = performance.now();
       teken(t0);
       gl.finish();
-      const stil = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (!stil && performance.now() - t0 < 40) {
+      if (performance.now() - t0 < 40) {
         const lus = (ms) => { teken(ms); requestAnimationFrame(lus); };
         requestAnimationFrame(lus);
       }
@@ -287,40 +322,30 @@ void main(){
     }
   },
 
+  /* ---------- de story-graphic ---------- */
   silhouetCanvas(ctx, C, rechtsX, baseY) {
-    const s = (rechtsX + 40) / 760;
-    const X = (x) => x * s;
-    const Y = (y) => baseY - (150 - y) * s;
-    for (const { alpha, bomen } of this.bos) {
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = C('--donker');
-      for (const [cx, h, hw] of bomen) {
-        for (const punten of this.denLagen(cx, h, hw)) {
-          ctx.beginPath();
-          ctx.moveTo(X(punten[0][0]), Y(punten[0][1]));
-          ctx.lineTo(X(punten[1][0]), Y(punten[1][1]));
-          ctx.lineTo(X(punten[2][0]), Y(punten[2][1]));
-          ctx.fill();
-        }
-      }
-      ctx.restore();
+    const { b, h } = this.BEELD;
+    const s = (rechtsX + 40) / b;
+    const imgEl = document.getElementById('silhouet');
+    if (imgEl && imgEl.complete && imgEl.naturalWidth) {
+      ctx.drawImage(imgEl, 0, baseY - h * s, b * s, h * s);
     }
     const { cx, cy, r } = this.orb;
+    const X = cx * s, Y = baseY - (h - cy) * s;
     if (this.__orbCanvas) {
-      const maat = r * 2.5 * s;
-      ctx.drawImage(this.__orbCanvas, X(cx) - maat / 2, Y(cy) - maat / 2, maat, maat);
+      const maat = r * 2.3 * s;
+      ctx.drawImage(this.__orbCanvas, X - maat / 2, Y - maat / 2, maat, maat);
       return;
     }
-    const gr = ctx.createRadialGradient(X(cx) - r * s * 0.25, Y(cy) - r * s * 0.35, r * s * 0.1, X(cx), Y(cy), r * s);
-    gr.addColorStop(0, 'rgba(238,238,238,0.95)');
-    gr.addColorStop(0.45, 'rgba(143,208,172,0.45)');
-    gr.addColorStop(1, 'rgba(143,208,172,0.1)');
+    const gr = ctx.createRadialGradient(X - r * s * 0.25, Y - r * s * 0.35, r * s * 0.1, X, Y, r * s);
+    gr.addColorStop(0, 'rgba(238,238,238,0.9)');
+    gr.addColorStop(0.45, 'rgba(143,208,172,0.4)');
+    gr.addColorStop(1, 'rgba(143,208,172,0.08)');
     ctx.beginPath();
-    ctx.arc(X(cx), Y(cy), r * s, 0, Math.PI * 2);
+    ctx.arc(X, Y, r * s, 0, Math.PI * 2);
     ctx.fillStyle = gr;
     ctx.fill();
-    ctx.strokeStyle = 'rgba(238,238,238,0.6)';
+    ctx.strokeStyle = 'rgba(238,238,238,0.55)';
     ctx.lineWidth = 1.5;
     ctx.stroke();
   },

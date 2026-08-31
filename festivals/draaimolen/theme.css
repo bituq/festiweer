@@ -70,7 +70,7 @@ footer .site { font-size: 8.5px; }
 
 /* ---------- staart: dennen-skyline over de volle breedte ---------- */
 .staart { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; position: relative; }
-#silhouet { display: block; width: 100%; height: 148px; }
+#silhouet { display: block; width: 100%; height: auto; }
 
 /* de korrel iets terug voor de leesbaarheid op de shader-achtergrond */
 .grain { opacity: 0.16; }
