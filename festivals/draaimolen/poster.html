@@ -2,22 +2,23 @@
 <html lang="nl">
 <head>
 <meta charset="utf-8">
-<title>Lowlands 2026 · het weer</title>
+<title>Draaimolen 2026 · het weer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Schibsted+Grotesk:ital,wght@0,400;0,500;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,500;125,900&family=Inter:ital,wght@0,400;0,500;0,700;1,400;1,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="poster.css">
+<link rel="stylesheet" href="theme.css">
 </head>
 <body>
 <div class="page">
 
   <header class="kop">
-    <div class="merk"><span>LOW</span><span>LANDS</span><span class="jaar">2026</span></div>
+    <div class="merk"><span>DRAAI</span><span>MOLEN</span><span class="jaar">2026</span></div>
     <div class="kop-info">
       <div class="onderwerp">HET WEER</div>
-      <div class="regels">WO 19 T/M MA 24 AUG<br>BIDDINGHUIZEN<br>ELKE 4 UUR VERS</div>
+      <div class="regels">VR 4 + ZA 5 SEP<br>MOB-COMPLEX TILBURG<br>ELKE 4 UUR VERS</div>
     </div>
-    <div class="hoeksticker"><svg viewBox="0 0 5 6"><g shape-rendering="crispEdges" fill="#2E1A5E"><rect x="2" y="0" width="1" height="1"/><rect x="1" y="1" width="3" height="1"/><rect x="0" y="2" width="5" height="3"/><rect x="1" y="5" width="3" height="1"/></g></svg></div>
+    <div class="hoeksticker"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="#0F231C" stroke-width="3"/></svg></div>
   </header>
 
   <div class="verdictblok">
@@ -47,14 +48,14 @@
       <div id="klein"></div>
     </div>
     <div class="buienregel">CHECK OP DE DAG ZELF EVEN BUIENRADAR &gt;</div>
-    <svg id="torens" viewBox="0 0 180 300"></svg>
+    <svg id="silhouet" viewBox="0 0 180 300"></svg>
   </div>
 
   <footer>
     <div class="rij">
-      <div class="fan">ONAFHANKELIJK FAN-PROJECT<br>NIET VERBONDEN AAN LOWLANDS OF MOJO</div>
-      <svg class="glyph" viewBox="0 0 5 6"><g shape-rendering="crispEdges" fill="#2E1A5E"><rect x="2" y="0" width="1" height="1"/><rect x="1" y="1" width="3" height="1"/><rect x="0" y="2" width="5" height="3"/><rect x="1" y="5" width="3" height="1"/></g></svg>
-      <div class="site">LOWLANDS.FESTIWEER.NL</div>
+      <div class="fan">ONAFHANKELIJK FAN-PROJECT<br>NIET VERBONDEN AAN DRAAIMOLEN</div>
+      <svg class="glyph" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="#0F231C" stroke-width="3"/></svg>
+      <div class="site">FESTIWEER.NL/DRAAIMOLEN</div>
     </div>
     <div class="uitleg">
       Laatste update: <b><span id="ftRun"></span></b> &middot; <b><span id="ftLeden"></span> doorrekeningen</b> van het Europese (ECMWF) en Amerikaanse (GFS) weermodel, via Open-Meteo &middot; de kans op een bui is het deel van de berekeningen dat die dag regen ziet.
@@ -65,6 +66,7 @@
 </div>
 
 <script src="data.js"></script>
+<script src="theme.js"></script>
 <script src="poster.js"></script>
 </body>
 </html>

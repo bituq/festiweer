@@ -1,7 +1,7 @@
 // Van ruwe modeldata naar window.WEERDATA: dagcijfers, teksten, iconen,
-// verdict en kaarten. Pure functies, alle invoer komt als argument binnen.
+// verdict en kaarten. Pure functies, de editie en alle invoer komen als argument binnen.
 
-import { DAYS, DAGNAMEN, DATUMS, FESTIVAL_IDX, KLEIN_ROLLEN } from './editie';
+import type { Editie } from './editie';
 import { stats, kalibreer, r1 } from './statistiek';
 import type { EnsembleDaily, HarmonieTemp } from './openmeteo';
 
@@ -15,8 +15,8 @@ export type Dag = {
 
 // Temperatuur draait op ECMWF (met biascorrectie en Harmonie binnen 48 uur);
 // GFS liep in 2026 structureel 2-3° te warm en telt alleen mee in de regenkans.
-export function berekenDagen(ec: EnsembleDaily, gfs: EnsembleDaily, harmonie: HarmonieTemp, bias: number, vandaag: string): Dag[] {
-  return DATUMS.map((datum, i) => {
+export function berekenDagen(editie: Editie, ec: EnsembleDaily, gfs: EnsembleDaily, harmonie: HarmonieTemp, bias: number, vandaag: string): Dag[] {
+  return editie.datums.map((datum, i) => {
     const ecT = stats([ec], 'temperature_2m_max', i);
     const gfsT = stats([gfs], 'temperature_2m_max', i);
     const ecMin = stats([ec], 'temperature_2m_min', i);
@@ -84,7 +84,7 @@ export function zinKlein(kans: number, med: number, windstoot: number): string {
   return z;
 }
 
-function verdict(dagen: Dag[]) {
+function verdict(editie: Editie, dagen: Dag[]) {
   const maxHi = Math.max(...dagen.map((d) => d.hi));
   const maxRegenP90 = Math.max(...dagen.map((d) => d.regenP90));
   const gemBest = Math.round(dagen.reduce((s, d) => s + d.best, 0) / dagen.length);
@@ -93,38 +93,43 @@ function verdict(dagen: Dag[]) {
     maxRegenP90 >= 20 ? 'HOU DE PONCHO KLAAR' : 'GEEN HITTE, GEEN NOODWEER';
 
   const natste = dagen.map((d, i) => [d.regenMed, i] as const).sort((a, b) => b[0] - a[0])[0][1];
-  const festKans = Math.round(FESTIVAL_IDX.reduce((s, i) => s + dagen[i].kans, 0) / FESTIVAL_IDX.length);
+  const festKans = Math.round(editie.festivalIdx.reduce((s, i) => s + dagen[i].kans, 0) / editie.festivalIdx.length);
   const laatste = dagen.length - 1;
 
   const zinnen = [`Overdag rond de ${gemBest} graden, af en toe een bui.`];
   zinnen.push(
-    natste < FESTIVAL_IDX[0]
-      ? `De meeste regen valt vóór het festival, op ${DAGNAMEN[natste]}.`
-      : `De natste dag wordt ${DAGNAMEN[natste]}.`
+    natste < editie.festivalIdx[0]
+      ? `De meeste regen valt vóór het festival, op ${editie.dagnamen[natste]}.`
+      : `De natste dag wordt ${editie.dagnamen[natste]}.`
   );
   zinnen.push(
     festKans < 70
       ? 'De festivaldagen zelf zijn meestal droog, met hooguit een buitje.'
       : 'Ook op de festivaldagen is een bui goed mogelijk.'
   );
-  if (dagen[laatste].kans >= 55) {
-    const naam = DAGNAMEN[laatste];
-    zinnen.push(`${naam[0].toUpperCase()}${naam.slice(1)}, bij het afbreken, kan het weer nat worden.`);
+  if (editie.laatsteDagZin && dagen[laatste].kans >= 55) {
+    const naam = editie.dagnamen[laatste];
+    zinnen.push(`${naam[0].toUpperCase()}${naam.slice(1)}, ${editie.laatsteDagZin}, kan het weer nat worden.`);
   }
   zinnen.push(`Dit zeggen ${dagen[0].leden} weerberekeningen, en ze zeggen bijna allemaal hetzelfde.`);
   return { kop, tekst: zinnen.join(' ') };
 }
 
-export function bouwWeerdata(dagen: Dag[], nu: Date) {
-  const groot = FESTIVAL_IDX.map((i) => ({
-    dag: DAYS[i].toUpperCase(),
+// Datumregel onder de dagnaam op de grote kaarten: '21 AUG'.
+const maandKort = new Intl.DateTimeFormat('nl-NL', { month: 'short', timeZone: 'UTC' });
+const datumLabel = (d: string) => `${Number(d.slice(8))} ${maandKort.format(new Date(d)).replace('.', '').toUpperCase()}`;
+
+export function bouwWeerdata(editie: Editie, dagen: Dag[], nu: Date) {
+  const groot = editie.festivalIdx.map((i) => ({
+    dag: editie.days[i].toUpperCase(),
+    datum: datumLabel(editie.datums[i]),
     icon: iconVoor(dagen[i].kans, dagen[i].regenMed),
     max: dagen[i].max, min: dagen[i].min, kans: dagen[i].kans,
     drops: druppels(dagen[i].regenMed),
     zin: zinGroot(dagen[i].kans, dagen[i].regenMed),
   }));
-  const klein = KLEIN_ROLLEN.map(([i, rol]) => ({
-    rol: `${rol} · ${DAYS[i].toUpperCase()}`,
+  const klein = editie.kleinRollen.map(([i, rol]) => ({
+    rol: `${rol} · ${editie.days[i].toUpperCase()}`,
     icon: iconVoor(dagen[i].kans, dagen[i].regenMed),
     max: dagen[i].max, kans: dagen[i].kans,
     zin: zinKlein(dagen[i].kans, dagen[i].regenMed, dagen[i].windstoot),
@@ -138,10 +143,15 @@ export function bouwWeerdata(dagen: Dag[], nu: Date) {
     runAt: nu.toISOString(),
     runAtText,
     leden: dagen[0].leden,
-    days: DAYS,
+    festival: {
+      slug: editie.slug, naam: editie.naam, jaar: editie.jaar, plaats: editie.plaats,
+      periode: editie.periode, site: editie.site, siteLabel: editie.siteLabel, disclaimer: editie.disclaimer,
+    },
+    normaal: editie.normaal,
+    days: editie.days,
     chartTemp: { best: dagen.map((d) => d.best), lo: dagen.map((d) => d.lo), hi: dagen.map((d) => d.hi) },
     chartRain: { med: dagen.map((d) => d.regenMed), p90: dagen.map((d) => d.regenP90) },
-    verdict: verdict(dagen),
+    verdict: verdict(editie, dagen),
     groot, klein,
   };
 }

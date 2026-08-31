@@ -2,24 +2,12 @@
 <html lang="nl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌦</text></svg>">
-<meta property="og:title" content="Lowlands 2026 · het weer">
-<meta property="og:description" content="De verwachting voor Biddinghuizen uit 82 weerberekeningen, elke 4 uur ververst.">
-<meta property="og:url" content="https://lowlands.festiweer.nl/">
-<meta property="og:type" content="website">
-<meta property="og:image" content="https://lowlands.festiweer.nl/og.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://lowlands.festiweer.nl/og.png">
-<meta name="description" content="De Lowlands-weersverwachting uit 82 weerberekeningen, elke 4 uur ververst.">
 <title>Lowlands 2026 · het weer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Schibsted+Grotesk:ital,wght@0,400;0,500;0,700;1,400;1,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="poster.css">
-<link rel="stylesheet" href="web.css">
+<link rel="stylesheet" href="theme.css">
 </head>
 <body>
 <div class="page">
@@ -60,14 +48,14 @@
       <div id="klein"></div>
     </div>
     <div class="buienregel">CHECK OP DE DAG ZELF EVEN BUIENRADAR &gt;</div>
-    <svg id="torens" viewBox="0 0 180 300"></svg>
+    <svg id="silhouet" viewBox="0 0 180 300"></svg>
   </div>
 
   <footer>
     <div class="rij">
       <div class="fan">ONAFHANKELIJK FAN-PROJECT<br>NIET VERBONDEN AAN LOWLANDS OF MOJO</div>
       <svg class="glyph" viewBox="0 0 5 6"><g shape-rendering="crispEdges" fill="#2E1A5E"><rect x="2" y="0" width="1" height="1"/><rect x="1" y="1" width="3" height="1"/><rect x="0" y="2" width="5" height="3"/><rect x="1" y="5" width="3" height="1"/></g></svg>
-      <div class="site">LOWLANDS.FESTIWEER.NL</div>
+      <div class="site">FESTIWEER.NL/LOWLANDS</div>
     </div>
     <div class="uitleg">
       Laatste update: <b><span id="ftRun"></span></b> &middot; <b><span id="ftLeden"></span> doorrekeningen</b> van het Europese (ECMWF) en Amerikaanse (GFS) weermodel, via Open-Meteo &middot; de kans op een bui is het deel van de berekeningen dat die dag regen ziet.
@@ -78,7 +66,7 @@
 </div>
 
 <script src="data.js"></script>
+<script src="theme.js"></script>
 <script src="poster.js"></script>
-<script src="share.js" defer></script>
 </body>
 </html>

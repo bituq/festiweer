@@ -1,27 +1,43 @@
-// Alle editie-specifieke instellingen op één plek: voor een volgende editie
-// hoeft alleen dit bestand aangepast (datums, rollen rond het festival).
+// Het editie-type: alles wat per festival(-editie) verschilt zit in één
+// config-object in festivals/<slug>/editie.ts. De daglabels worden hier
+// uit de datums afgeleid, zodat ze nooit uit de pas lopen: 'wo 19' / 'woensdag'.
 
-export const LAT = 52.437;
-export const LON = 5.763;
-export const START = '2026-08-19';
-export const END = '2026-08-24';
+export type EditieBasis = {
+  slug: string;
+  naam: string;                        // 'Lowlands'
+  jaar: number;
+  plaats: string;                      // 'Biddinghuizen'
+  periode: string;                     // kopregel op de poster: 'WO 19 T/M MA 24 AUG'
+  site: string;                        // canonieke URL, zonder slash op het eind
+  siteLabel: string;                   // zoals hij op de poster staat
+  disclaimer: string;                  // 'NIET VERBONDEN AAN LOWLANDS OF MOJO'
+  ogBeschrijving: string;
+  lat: number;
+  lon: number;
+  start: string;                       // eerste dag van het venster (YYYY-MM-DD)
+  end: string;                         // laatste dag van het venster
+  festivalIdx: number[];               // indices in het dagen-array: de festivaldagen zelf
+  kleinRollen: [number, string][];     // reisrollen in "komen en gaan": [index, 'OPBOUW']
+  laatsteDagZin?: string;              // bijzin voor een natte laatste dag ('bij het afbreken'); weglaten = geen zin
+  normaal: { temp: number; label: string }; // referentielijn in de temperatuurgrafiek
+  kaart: { gradient: string; tekst: string; accent: string }; // festivalkaart op de landingspagina
+};
 
-// Indices in het dagen-array: welke dagen zijn het festival zelf,
-// en welke dagen eromheen krijgen een reisrol in "komen en gaan".
-export const FESTIVAL_IDX = [2, 3, 4];
-export const KLEIN_ROLLEN: [number, string][] = [[0, 'OPBOUW'], [1, 'AANKOMST'], [5, 'NAAR HUIS']];
+export type Editie = EditieBasis & { datums: string[]; days: string[]; dagnamen: string[] };
 
 const DAG_MS = 86_400_000;
-export const DATUMS: string[] = (() => {
-  const uit: string[] = [];
-  for (let t = Date.parse(START); t <= Date.parse(END); t += DAG_MS) {
-    uit.push(new Date(t).toISOString().slice(0, 10));
-  }
-  return uit;
-})();
-
-// Daglabels afgeleid uit de datums, zodat ze nooit uit de pas lopen: 'wo 19' / 'woensdag'.
 const kort = new Intl.DateTimeFormat('nl-NL', { weekday: 'short', timeZone: 'UTC' });
 const lang = new Intl.DateTimeFormat('nl-NL', { weekday: 'long', timeZone: 'UTC' });
-export const DAYS = DATUMS.map((d) => `${kort.format(new Date(d)).replace('.', '')} ${Number(d.slice(8))}`);
-export const DAGNAMEN = DATUMS.map((d) => lang.format(new Date(d)));
+
+export function maakEditie(basis: EditieBasis): Editie {
+  const datums: string[] = [];
+  for (let t = Date.parse(basis.start); t <= Date.parse(basis.end); t += DAG_MS) {
+    datums.push(new Date(t).toISOString().slice(0, 10));
+  }
+  return {
+    ...basis,
+    datums,
+    days: datums.map((d) => `${kort.format(new Date(d)).replace('.', '')} ${Number(d.slice(8))}`),
+    dagnamen: datums.map((d) => lang.format(new Date(d))),
+  };
+}

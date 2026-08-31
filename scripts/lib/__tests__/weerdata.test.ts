@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'bun:test';
-import { DATUMS } from '../editie';
+import { EDITIE } from '../../../festivals/lowlands/editie';
 import { berekenDagen, bouwWeerdata, iconVoor, druppels, zinGroot, zinKlein } from '../weerdata';
 import type { EnsembleDaily } from '../openmeteo';
+
+const DATUMS = EDITIE.datums;
 
 // Fixture: per variabele een lijst leden, elk lid één waarde die voor alle
 // zes dagen geldt (of een array van zes voor variatie per dag).
@@ -31,7 +33,7 @@ const GISTER_VER_WEG = '2026-08-01'; // ver vóór alle dagen: geen Harmonie-win
 
 describe('berekenDagen', () => {
   it('haalt de temperatuur alleen uit ECMWF en trekt de bias eraf', () => {
-    const dagen = berekenDagen(kalmEc(), kalmGfs(), {}, 1, GISTER_VER_WEG);
+    const dagen = berekenDagen(EDITIE, kalmEc(), kalmGfs(), {}, 1, GISTER_VER_WEG);
     expect(dagen[0].best).toBe(19); // EC-mediaan 20 min bias 1; GFS (23) telt niet mee
     expect(dagen[0].min).toBe(12);  // EC-min-mediaan 13 min bias 1
     expect(dagen[0].lo).toBe(18);
@@ -40,7 +42,7 @@ describe('berekenDagen', () => {
 
   it('laat Harmonie de temperatuur overnemen op dag 0 tot en met 2, ongecorrigeerd', () => {
     const harmonie = Object.fromEntries(DATUMS.map((d) => [d, { max: 25, min: 15 }]));
-    const dagen = berekenDagen(kalmEc(), kalmGfs(), harmonie, 1, DATUMS[0]);
+    const dagen = berekenDagen(EDITIE, kalmEc(), kalmGfs(), harmonie, 1, DATUMS[0]);
     expect(dagen[0].best).toBe(25);
     expect(dagen[2].best).toBe(25);
     expect(dagen[2].min).toBe(15);
@@ -49,13 +51,13 @@ describe('berekenDagen', () => {
 
   it('negeert Harmonie voor dagen die al voorbij zijn', () => {
     const harmonie = { [DATUMS[0]]: { max: 25, min: 15 } };
-    const dagen = berekenDagen(kalmEc(), kalmGfs(), harmonie, 0, DATUMS[1]);
+    const dagen = berekenDagen(EDITIE, kalmEc(), kalmGfs(), harmonie, 0, DATUMS[1]);
     expect(dagen[0].best).toBe(20);
   });
 
   it('rekt de band op tot om de Harmonie-schatting heen', () => {
     const harmonie = { [DATUMS[0]]: { max: 27, min: 15 } };
-    const dagen = berekenDagen(kalmEc(), kalmGfs(), harmonie, 0, DATUMS[0]);
+    const dagen = berekenDagen(EDITIE, kalmEc(), kalmGfs(), harmonie, 0, DATUMS[0]);
     expect(dagen[0].hi).toBe(27);
     expect(dagen[0].lo).toBeLessThanOrEqual(27);
   });
@@ -63,13 +65,13 @@ describe('berekenDagen', () => {
   it('poolt de regenkans over beide ensembles en kalibreert hem', () => {
     const ec = kalmEc({ precipitation_sum: [0, 0, 0] });
     const gfs = kalmGfs({ precipitation_sum: [2, 2, 2] }); // 3 natte GFS-leden
-    const dagen = berekenDagen(ec, gfs, {}, 0, GISTER_VER_WEG);
+    const dagen = berekenDagen(EDITIE, ec, gfs, {}, 0, GISTER_VER_WEG);
     expect(dagen[0].kans).toBe(43); // 3 van 6 gepoolde leden nat = 50%, gekalibreerd 43
     expect(dagen[0].kansGfs).toBe(100);
   });
 
   it('telt de leden van beide ensembles op', () => {
-    const dagen = berekenDagen(kalmEc(), kalmGfs(), {}, 0, GISTER_VER_WEG);
+    const dagen = berekenDagen(EDITIE, kalmEc(), kalmGfs(), {}, 0, GISTER_VER_WEG);
     expect(dagen[0].leden).toBe(5);
   });
 });
@@ -114,46 +116,49 @@ describe('bouwWeerdata', () => {
   const NU = new Date('2026-08-22T04:46:26.921Z');
 
   it('schrijft de run-tijd in Amsterdamse tijd, zoals de poster hem toont', () => {
-    const dagen = berekenDagen(kalmEc(), kalmGfs(), {}, 0, GISTER_VER_WEG);
-    const w = bouwWeerdata(dagen, NU);
+    const dagen = berekenDagen(EDITIE, kalmEc(), kalmGfs(), {}, 0, GISTER_VER_WEG);
+    const w = bouwWeerdata(EDITIE, dagen, NU);
     expect(w.runAt).toBe('2026-08-22T04:46:26.921Z');
     expect(w.runAtText).toBe('22 augustus 2026, 06:46');
   });
 
   it('bouwt de festivalkaarten en reisrijen op de juiste dagen', () => {
-    const dagen = berekenDagen(kalmEc(), kalmGfs(), {}, 0, GISTER_VER_WEG);
-    const w = bouwWeerdata(dagen, NU);
+    const dagen = berekenDagen(EDITIE, kalmEc(), kalmGfs(), {}, 0, GISTER_VER_WEG);
+    const w = bouwWeerdata(EDITIE, dagen, NU);
     expect(w.groot.map((g) => g.dag)).toEqual(['VR 21', 'ZA 22', 'ZO 23']);
+    expect(w.groot.map((g) => g.datum)).toEqual(['21 AUG', '22 AUG', '23 AUG']);
+    expect(w.festival.slug).toBe('lowlands');
+    expect(w.normaal).toEqual({ temp: 22, label: 'normaal eind augustus' });
     expect(w.klein.map((k) => k.rol)).toEqual(['OPBOUW · WO 19', 'AANKOMST · DO 20', 'NAAR HUIS · MA 24']);
     expect(w.days).toEqual(['wo 19', 'do 20', 'vr 21', 'za 22', 'zo 23', 'ma 24']);
   });
 
   it('kopt op hitte zodra de bovenkant van de band 28 raakt', () => {
-    const dagen = berekenDagen(kalmEc({ temperature_2m_max: [27, 28, 29] }), kalmGfs(), {}, 0, GISTER_VER_WEG);
-    expect(bouwWeerdata(dagen, NU).verdict.kop).toBe('WARM, DRINK GENOEG WATER');
+    const dagen = berekenDagen(EDITIE, kalmEc({ temperature_2m_max: [27, 28, 29] }), kalmGfs(), {}, 0, GISTER_VER_WEG);
+    expect(bouwWeerdata(EDITIE, dagen, NU).verdict.kop).toBe('WARM, DRINK GENOEG WATER');
   });
 
   it('kopt op de poncho zodra p90 van de regen 20 mm raakt', () => {
     const ec = kalmEc({ precipitation_sum: [0, 4, [20, 0, 0, 0, 0, 0]] });
-    const dagen = berekenDagen(ec, kalmGfs(), {}, 0, GISTER_VER_WEG);
-    const w = bouwWeerdata(dagen, NU);
+    const dagen = berekenDagen(EDITIE, ec, kalmGfs(), {}, 0, GISTER_VER_WEG);
+    const w = bouwWeerdata(EDITIE, dagen, NU);
     expect(w.verdict.kop).toBe('HOU DE PONCHO KLAAR');
   });
 
   it('kopt geruststellend zonder hitte of noodweer', () => {
-    const dagen = berekenDagen(kalmEc(), kalmGfs(), {}, 0, GISTER_VER_WEG);
-    expect(bouwWeerdata(dagen, NU).verdict.kop).toBe('GEEN HITTE, GEEN NOODWEER');
+    const dagen = berekenDagen(EDITIE, kalmEc(), kalmGfs(), {}, 0, GISTER_VER_WEG);
+    expect(bouwWeerdata(EDITIE, dagen, NU).verdict.kop).toBe('GEEN HITTE, GEEN NOODWEER');
   });
 
   it('benoemt de natste dag vóór het festival apart', () => {
     const ec = kalmEc({ precipitation_sum: [[0, 6, 0, 0, 0, 0], [0, 6, 0, 0, 0, 0], [0, 6, 0, 0, 0, 0]] });
-    const w = bouwWeerdata(berekenDagen(ec, kalmGfs(), {}, 0, GISTER_VER_WEG), NU);
+    const w = bouwWeerdata(EDITIE, berekenDagen(EDITIE, ec, kalmGfs(), {}, 0, GISTER_VER_WEG), NU);
     expect(w.verdict.tekst).toContain('De meeste regen valt vóór het festival, op donderdag.');
   });
 
   it('benoemt een natte festivaldag gewoon als natste dag', () => {
     const ec = kalmEc({ precipitation_sum: [[0, 0, 0, 6, 0, 0], [0, 0, 0, 6, 0, 0], [0, 0, 0, 6, 0, 0]] });
-    const w = bouwWeerdata(berekenDagen(ec, kalmGfs(), {}, 0, GISTER_VER_WEG), NU);
+    const w = bouwWeerdata(EDITIE, berekenDagen(EDITIE, ec, kalmGfs(), {}, 0, GISTER_VER_WEG), NU);
     expect(w.verdict.tekst).toContain('De natste dag wordt zaterdag.');
   });
 
@@ -161,12 +166,12 @@ describe('bouwWeerdata', () => {
     const nat = [0, 0, 0, 0, 0, 6];
     const ec = kalmEc({ precipitation_sum: [nat, nat, nat] });
     const gfs = kalmGfs({ precipitation_sum: [nat, nat] });
-    const w = bouwWeerdata(berekenDagen(ec, gfs, {}, 0, GISTER_VER_WEG), NU);
+    const w = bouwWeerdata(EDITIE, berekenDagen(EDITIE, ec, gfs, {}, 0, GISTER_VER_WEG), NU);
     expect(w.verdict.tekst).toContain('Maandag, bij het afbreken, kan het weer nat worden.');
   });
 
   it('houdt de festivaldagen-zin droog onder de 70% gemiddelde kans', () => {
-    const w = bouwWeerdata(berekenDagen(kalmEc(), kalmGfs(), {}, 0, GISTER_VER_WEG), NU);
+    const w = bouwWeerdata(EDITIE, berekenDagen(EDITIE, kalmEc(), kalmGfs(), {}, 0, GISTER_VER_WEG), NU);
     expect(w.verdict.tekst).toContain('De festivaldagen zelf zijn meestal droog, met hooguit een buitje.');
   });
 
@@ -174,7 +179,7 @@ describe('bouwWeerdata', () => {
     const nat = [0, 0, 6, 6, 6, 0];
     const ec = kalmEc({ precipitation_sum: [nat, nat, nat] });
     const gfs = kalmGfs({ precipitation_sum: [nat, nat] });
-    const w = bouwWeerdata(berekenDagen(ec, gfs, {}, 0, GISTER_VER_WEG), NU);
+    const w = bouwWeerdata(EDITIE, berekenDagen(EDITIE, ec, gfs, {}, 0, GISTER_VER_WEG), NU);
     expect(w.verdict.tekst).toContain('Ook op de festivaldagen is een bui goed mogelijk.');
   });
 });

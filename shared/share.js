@@ -1,8 +1,11 @@
 // Deelbalk voor de webversie: Twitter-intent + Instagram story-graphic (1080x1920)
-// gegenereerd uit window.WEERDATA in de pixelstijl van de poster. Alleen geladen door index.html.
+// gegenereerd uit window.WEERDATA in de pixelstijl van de poster. Festival-eigen
+// tekenwerk (gradient, wordmark, silhouet) komt uit window.FESTIVAL (theme.js).
+// Alleen geladen door index.html.
 (function () {
   const D = window.WEERDATA;
-  const SITE = 'https://lowlands.festiweer.nl';
+  const F = window.FESTIVAL;
+  const SITE = D.festival.site + '/';
   const CSS = getComputedStyle(document.documentElement);
   const C = (n) => CSS.getPropertyValue(n).trim();
 
@@ -33,14 +36,14 @@
 
   /* ---------- Twitter ---------- */
   document.getElementById('deelTwitter').addEventListener('click', () => {
-    const tekst = `Wordt het nat op Lowlands? De verwachting uit ${D.leden} weerberekeningen, elke 4 uur ververst:`;
+    const tekst = `Wordt het nat op ${D.festival.naam}? De verwachting uit ${D.leden} weerberekeningen, elke 4 uur ververst:`;
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tekst)}&url=${encodeURIComponent(SITE)}`;
     window.open(url, '_blank', 'noopener');
   });
 
   /* ---------- Instagram: story-graphic ---------- */
   async function laadIcoon(naam) {
-    const res = await fetch(`assets/icons/pixel-${naam}.svg`);
+    const res = await fetch(`assets/icons/${naam}.svg`);
     let svg = await res.text();
     // viewBox-only SVG's hebben geen intrinsieke maat; die is nodig voor drawImage
     svg = svg.replace('<svg ', '<svg width="512" height="512" ');
@@ -51,29 +54,10 @@
     return img;
   }
 
-  function torens(ctx, rechtsX, baseY) {
-    function toren(cx, topY, baseW, accent) {
-      const stap = 24, n = Math.ceil((baseY - topY) / stap);
-      for (let i = 0; i < n; i++) {
-        const f = i / (n - 1);
-        let w = 14 + (baseW - 14) * f;
-        w = Math.max(14, Math.round(w / 7) * 7);
-        let fill = C('--donkerpaars');
-        if (f < 0.11) fill = C('--geel');
-        else if (f < 0.56) fill = C('--cream');
-        else if (accent && f < 0.62) fill = C('--geel');
-        ctx.fillStyle = fill;
-        ctx.fillRect(Math.round(cx - w / 2), topY + i * stap, w, stap + 1);
-      }
-    }
-    toren(rechtsX - 90, baseY - 430, 150, true);
-    toren(rechtsX - 250, baseY - 300, 120, false);
-  }
-
   function korrel(ctx, W, H) {
     ctx.save();
     ctx.globalAlpha = 0.045;
-    ctx.fillStyle = '#2A1850';
+    ctx.fillStyle = C('--ink');
     for (let i = 0; i < 9000; i++) {
       ctx.fillRect(Math.random() * W, Math.random() * H, 1.4, 1.4);
     }
@@ -81,10 +65,7 @@
   }
 
   async function maakStory() {
-    await document.fonts.load("700 100px Silkscreen");
-    await document.fonts.load("400 40px Silkscreen");
-    await document.fonts.load("700 36px 'Schibsted Grotesk'");
-    await document.fonts.load("italic 500 27px 'Schibsted Grotesk'");
+    await Promise.all((F.fontLoads || []).map((f) => document.fonts.load(f)));
     const iconen = await Promise.all(D.groot.map((d) => laadIcoon(d.icon)));
 
     const W = 1080, H = 1920;
@@ -93,88 +74,84 @@
     const ctx = cv.getContext('2d');
     ctx.imageSmoothingEnabled = false;
 
-    // sunset-gradient zoals op de poster
+    // de festival-gradient zoals op de poster
     const gr = ctx.createLinearGradient(0, 0, 0, H);
-    for (const [stop, kleur] of [[0, '#31255F'], [0.14, '#3B3078'], [0.30, '#41549B'], [0.46, '#6390B0'], [0.57, '#9DBDB4'], [0.68, '#D6C49F'], [0.79, '#ECAF6B'], [0.90, '#E5823A'], [1, '#DF6E28']]) {
-      gr.addColorStop(stop, kleur);
-    }
+    for (const [stop, kleur] of F.gradient) gr.addColorStop(stop, kleur);
     ctx.fillStyle = gr;
     ctx.fillRect(0, 0, W, H);
 
-    const STRIP = 104; // cream strip onderin
-    torens(ctx, W - 40, H - STRIP);
+    const STRIP = 104; // lichte strip onderin
+    F.silhouetCanvas(ctx, C, W - 40, H - STRIP);
 
-    // wordmark linksboven; LOW uitgerekt zoals op de poster
-    ctx.fillStyle = C('--cream');
-    ctx.font = "700 76px Silkscreen";
-    ctx.save();
-    ctx.translate(64, 148);
-    ctx.scale(1.66, 1);
-    ctx.fillText('LOW', 0, 0);
-    ctx.restore();
-    ctx.fillText('LANDS', 64, 226);
-    ctx.font = "700 54px Silkscreen";
-    ctx.fillText('2026', 64, 296);
+    // wordmark linksboven
+    F.wordmarkCanvas(ctx, C, 64, 148);
 
     // rechtsboven
     ctx.textAlign = 'right';
-    ctx.fillStyle = C('--geel');
-    ctx.font = "700 40px Silkscreen";
+    ctx.fillStyle = C('--accent2');
+    F.displayFont(ctx, 40);
     ctx.fillText('HET WEER', W - 64, 120);
-    ctx.fillStyle = C('--mint');
-    ctx.font = "400 22px Silkscreen";
-    ctx.fillText('WO 19 T/M MA 24 AUG', W - 64, 176);
-    ctx.fillText('BIDDINGHUIZEN', W - 64, 222);
-    ctx.fillText('ELKE 4 UUR VERS', W - 64, 268);
+    ctx.fillStyle = C('--accent');
+    F.displayFont(ctx, 22, 400);
+    const regels = [D.festival.periode, D.festival.plaats.toUpperCase(), 'ELKE 4 UUR VERS'];
+    regels.forEach((r, i) => ctx.fillText(r, W - 64, 176 + i * 46));
 
     // verdict
     ctx.textAlign = 'left';
-    ctx.fillStyle = C('--geel');
-    ctx.font = "700 42px Silkscreen";
+    ctx.fillStyle = C('--accent2');
+    F.displayFont(ctx, 42);
     ctx.fillText(D.verdict.kop, 64, 430, W - 128);
 
-    // dag-rijen met mint-scheidingslijnen
-    const rijY = [560, 900, 1240], rijH = 340;
+    // dag-rijen met scheidingslijnen in de accentkleur
+    const n = D.groot.length;
+    const rijH = n >= 3 ? 340 : 460;
+    const rijY = (i) => (n >= 3 ? 560 : 640) + i * rijH;
+    const lichtVanaf = F.lichtVanaf ?? 0.62;
     D.groot.forEach((d, i) => {
-      const y = rijY[i];
+      const y = rijY(i);
       if (i > 0) {
-        ctx.strokeStyle = 'rgba(143,228,180,0.5)';
+        ctx.strokeStyle = C('--accent');
+        ctx.globalAlpha = 0.5;
         ctx.lineWidth = 2;
         ctx.beginPath(); ctx.moveTo(64, y - 34); ctx.lineTo(W - 64, y - 34); ctx.stroke();
+        ctx.globalAlpha = 1;
       }
-      // onderste rij ligt op het lichte deel van de gradient: donkere tekst
-      const licht = i === 2;
-      const accent = licht ? C('--donkerpaars') : C('--mint');
-      const basis = licht ? C('--donkerpaars') : C('--cream');
+      // rijen op het lichte deel van de gradient krijgen donkere tekst
+      const licht = (y + 110) / H >= lichtVanaf;
+      const accent = licht ? C('--donker') : C('--accent');
+      const basis = licht ? C('--donker') : C('--licht');
       ctx.drawImage(iconen[i], 56, y + 10, 220, 220);
       ctx.textAlign = 'left';
       ctx.fillStyle = accent;
-      ctx.font = "700 34px Silkscreen";
+      F.displayFont(ctx, 34);
       ctx.fillText(d.dag, 320, y + 70);
       ctx.fillStyle = basis;
-      ctx.font = "700 30px 'Schibsted Grotesk'";
+      F.bodyFont(ctx, 30);
       ctx.fillText(`${d.kans}% kans op een bui`, 320, y + 130);
-      ctx.font = "italic 500 27px 'Schibsted Grotesk'";
-      ctx.fillStyle = licht ? 'rgba(42,24,80,0.85)' : 'rgba(244,235,218,0.85)';
+      F.bodyFont(ctx, 27, { gewicht: 500, cursief: true });
+      ctx.save();
+      ctx.fillStyle = basis;
+      ctx.globalAlpha = 0.85;
       ctx.fillText(d.zin, 320, y + 178);
+      ctx.restore();
       ctx.textAlign = 'right';
       ctx.fillStyle = basis;
-      ctx.font = "700 110px Silkscreen";
+      F.displayFont(ctx, 110);
       ctx.fillText(`${d.max}`, W - 120, y + 160);
-      ctx.font = "700 60px 'Schibsted Grotesk'";
+      F.bodyFont(ctx, 60);
       ctx.fillText('°', W - 84, y + 96);
     });
 
-    // cream strip onderin
-    ctx.fillStyle = C('--cream');
+    // lichte strip onderin
+    ctx.fillStyle = C('--licht');
     ctx.fillRect(0, H - STRIP, W, STRIP);
     ctx.textAlign = 'left';
-    ctx.fillStyle = C('--donkerpaars');
-    ctx.font = "400 17px Silkscreen";
+    ctx.fillStyle = C('--donker');
+    F.displayFont(ctx, 17, 400);
     ctx.fillText('ONAFHANKELIJK FAN-PROJECT', 56, H - STRIP + 62);
     ctx.textAlign = 'right';
-    ctx.font = "700 30px Silkscreen";
-    ctx.fillText('LOWLANDS.FESTIWEER.NL', W - 56, H - STRIP + 66);
+    F.displayFont(ctx, 30);
+    ctx.fillText(D.festival.siteLabel, W - 56, H - STRIP + 66);
 
     korrel(ctx, W, H);
     return new Promise((ok) => cv.toBlob((b) => ok(b), 'image/png'));
@@ -187,15 +164,15 @@
     knop.disabled = true;
     try {
       const blob = await maakStory();
-      const file = new File([blob], 'lowlands-weer.png', { type: 'image/png' });
+      const file = new File([blob], `${D.festival.slug}-weer.png`, { type: 'image/png' });
       try { await navigator.clipboard.writeText(SITE); } catch {}
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         melding('De link staat op je klembord: plak hem in Instagram in de linksticker.');
-        await navigator.share({ files: [file], title: 'Lowlands 2026 · het weer', text: SITE });
+        await navigator.share({ files: [file], title: `${D.festival.naam} ${D.festival.jaar} · het weer`, text: SITE });
       } else {
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = 'lowlands-weer.png';
+        a.download = `${D.festival.slug}-weer.png`;
         a.click();
         URL.revokeObjectURL(a.href);
         melding('Story-graphic gedownload en de link staat op je klembord: plak hem in Instagram in de linksticker.');

@@ -1,0 +1,87 @@
+/* Gedeelde poster-layout. Het palet komt uit theme.css van het festival, via
+   semantische slots: --nacht (achtergrond boven), --licht (tekst op donker,
+   was cream), --donker (tekst op licht), --accent (koppen/lijnen op donker),
+   --accent2 (uitgelichte koppen), --signaal (beste schatting / waarschuwing),
+   --band (onzekerheidsband), --ink (lopende tekst op licht).
+   web.css legt er voor de webversie overrides overheen. */
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { background: var(--nacht); color: var(--licht); font-family: var(--f-body); }
+.page {
+  width: 210mm; height: 297mm; overflow: hidden; position: relative;
+  display: flex; flex-direction: column;
+  background: var(--gradient);
+}
+svg { display: block; }
+.pix { font-family: var(--f-pix); font-weight: 700; }
+
+/* korrel over de hele poster */
+.grain {
+  position: absolute; inset: 0; z-index: 60; pointer-events: none;
+  opacity: 0.26; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- kop ---------- */
+.kop { padding: 30px 30px 0; display: flex; justify-content: space-between; position: relative; }
+.merk { font-family: var(--f-pix); font-weight: 700; color: var(--licht); font-size: 44px; line-height: 1.02; letter-spacing: 2px; }
+.merk span { display: block; }
+.merk .jaar { font-size: 31px; margin-top: 4px; }
+.kop-info { text-align: right; font-family: var(--f-pix); padding: 6px 56px 0 0; }
+.kop-info .onderwerp { font-weight: 700; font-size: 16px; color: var(--accent2); }
+.kop-info .regels { font-weight: 400; font-size: 11px; color: var(--accent); line-height: 2.05; margin-top: 8px; }
+.hoeksticker {
+  position: absolute; top: 0; right: 0; width: 46px; height: 46px;
+  background: var(--accent); display: flex; align-items: center; justify-content: center;
+}
+.hoeksticker svg { width: 17px; height: 21px; }
+
+/* ---------- verdict ---------- */
+.verdictblok { padding: 24px 30px 0; }
+#verdictKop { font-family: var(--f-pix); font-weight: 700; font-size: 19px; color: var(--accent2); margin: 0 0 9px; }
+#verdictTekst { margin: 0; max-width: 560px; font-size: 11.5px; line-height: 1.55; color: var(--licht); }
+
+/* ---------- de festivaldagen ---------- */
+.dagen { margin-top: 26px; padding: 0 30px; }
+.kolommen { display: grid; grid-template-columns: repeat(var(--dagkolommen, 3), 1fr); }
+.kolom { padding: 2px 14px; text-align: center; }
+.kolom + .kolom { border-left: 1px solid color-mix(in srgb, var(--accent) 55%, transparent); }
+.kolom .dagnaam { font-family: var(--f-pix); font-weight: 700; font-size: 14.5px; color: var(--accent); letter-spacing: 1px; }
+.kolom .datum { font-family: var(--f-pix); font-weight: 400; font-size: 10.5px; color: var(--licht); letter-spacing: 1px; margin-top: 3px; }
+.kolom .icon { display: block; width: 100px; height: 100px; margin: 8px auto 4px; object-fit: contain; image-rendering: pixelated; }
+.kolom .temp { font-family: var(--f-pix); font-weight: 700; font-size: 40px; line-height: 1; color: var(--licht); }
+.kolom .temp .gr { font-family: var(--f-body); font-weight: 700; font-size: 24px; vertical-align: 10px; }
+.kolom .nacht { font-size: 10px; color: color-mix(in srgb, var(--licht) 80%, transparent); margin-top: 2px; }
+.kolom .conditie { font-family: var(--f-pix); font-weight: 700; font-size: 8.5px; color: var(--accent); margin-top: 9px; letter-spacing: 0.5px; }
+.kolom .kans { font-size: 10px; font-weight: 700; color: var(--licht); margin-top: 5px; }
+.kolom .drops { margin-top: 5px; display: flex; justify-content: center; }
+.kolom .drops svg { width: 52px; height: 12px; }
+
+/* ---------- grafieken ---------- */
+.grafieken { margin-top: 26px; padding: 0 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 0 30px; color: var(--ink); }
+.grafieken h2 { font-family: var(--f-pix); font-weight: 700; font-size: 12.5px; color: var(--donker); margin: 0 0 6px; }
+.mmlegende { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 12px; margin-top: 7px; font-size: 8px; color: var(--ink); }
+.mmlegende .item { display: flex; align-items: center; gap: 6px; }
+.mmlegende .dr { width: 34px; height: 8px; flex: none; }
+.mmlegende .uitleg-mm { grid-column: 1 / -1; font-size: 7.5px; color: color-mix(in srgb, var(--ink) 70%, transparent); margin-top: 2px; }
+
+/* ---------- onderin: komen en gaan, silhouet ---------- */
+.onder { margin-top: 26px; padding: 0 30px 14px; position: relative; flex: 1; display: grid; grid-template-columns: 1fr 190px; grid-template-rows: 1fr auto; column-gap: 26px; color: var(--ink); }
+.onder h2 { font-family: var(--f-pix); font-weight: 700; font-size: 12.5px; color: var(--donker); margin: 0 0 7px; }
+.reisrij { display: flex; align-items: flex-start; gap: 9px; padding: 4px 0 6px; }
+.reisrij img { width: 30px; height: 30px; flex: none; margin-top: 1px; image-rendering: pixelated; }
+.reisrij .rol { font-family: var(--f-pix); font-weight: 700; font-size: 8.5px; color: var(--donker); letter-spacing: 0.5px; }
+.reisrij .feiten { font-size: 9.5px; font-weight: 700; margin-top: 2px; }
+.reisrij .zin { font-size: 9px; font-style: italic; color: color-mix(in srgb, var(--ink) 80%, transparent); line-height: 1.35; margin-top: 1px; }
+.buienregel { grid-column: 1; font-family: var(--f-pix); font-weight: 700; font-size: 12px; color: var(--donker); align-self: end; }
+#silhouet { position: absolute; right: 14px; bottom: 0; width: 180px; height: 300px; z-index: 1; }
+
+/* ---------- footer ---------- */
+footer { background: var(--licht); color: var(--donker); padding: 11px 30px 9px; position: relative; z-index: 2; }
+footer .rij { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+footer .fan { font-family: var(--f-pix); font-weight: 400; font-size: 7.5px; line-height: 1.8; }
+footer .glyph { width: 14px; height: 18px; flex: none; }
+footer .site { font-family: var(--f-pix); font-weight: 700; font-size: 9.5px; text-align: right; line-height: 1.8; }
+footer .uitleg { font-size: 6.8px; color: color-mix(in srgb, var(--ink) 75%, transparent); margin-top: 5px; }
+footer .uitleg b { color: var(--ink); }

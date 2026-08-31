@@ -1,0 +1,45 @@
+/* Draaimolen 2026, naar de campagne op draaimolen.nu: diep bosgroen dat
+   oplost in olijfgoud, gebroken wit (#EEE), brede vette grotesk (Archivo
+   Expanded als vrije stand-in voor Druk Wide) met Inter als bodytekst.
+   Vult de semantische slots van shared/poster.css in. */
+:root {
+  --nacht: #060A07;
+  --licht: #EEEEEE;       /* gebroken wit van draaimolen.nu */
+  --donker: #0F231C;      /* diep bosgroen */
+  --accent: #8FD0AC;      /* chrome-mint van het logo */
+  --accent2: #E8C96A;     /* olijfgoud uit de campagne-gradient */
+  --signaal: #C2472E;     /* aardse rood-oranje uit de orb-beelden */
+  --band: #2E4A3A;
+  --ink: #17251D;
+  --f-pix: 'Archivo', 'Arial Black', sans-serif;
+  --f-label: 'Inter', Arial, sans-serif;
+  --f-body: 'Inter', Arial, sans-serif;
+  --dagkolommen: 2;
+  --gradient: linear-gradient(180deg,
+    #060A07 0%, #0C1912 11%, #14291F 24%, #24452F 35%, #3A573D 42%,
+    #75875D 50%, #A1A56F 58%, #BFB57E 68%, #D4C88E 78%, #E2D8A3 88%, #EDE4B8 100%);
+}
+
+/* Archivo als variabele font: overal de brede (Druk Wide-achtige) instantie */
+* { font-stretch: 125%; }
+
+/* het brede wordmark heeft minder korpsgrootte nodig dan LOW/LANDS */
+.merk { font-size: 30px; letter-spacing: 0; line-height: 1.12; }
+.merk .jaar { font-size: 21px; margin-top: 5px; }
+.kop-info .onderwerp { font-size: 14px; }
+.kop-info .regels { font-size: 9px; letter-spacing: 0.5px; }
+.kolom .dagnaam { font-size: 12px; }
+.kolom .temp { font-size: 38px; }
+#verdictKop { font-size: 16.5px; }
+.grafieken h2, .onder h2 { font-size: 11px; }
+.kolom .conditie { font-size: 7.5px; }
+.buienregel { font-size: 10px; }
+footer .site { font-size: 8.5px; }
+.reisrij .rol { font-size: 7.5px; }
+
+/* twee festivaldagen: geef de kolommen wat meer binnenlucht */
+.kolom { padding: 2px 34px; }
+
+/* de orb als merkteken in plaats van een pixel-glyph */
+.hoeksticker svg { width: 20px; height: 20px; }
+footer .glyph { width: 15px; height: 15px; }

@@ -2,6 +2,20 @@ window.WEERDATA = {
   "runAt": "2026-08-22T04:46:26.921Z",
   "runAtText": "22 augustus 2026, 06:46",
   "leden": 82,
+  "festival": {
+    "slug": "lowlands",
+    "naam": "Lowlands",
+    "jaar": 2026,
+    "plaats": "Biddinghuizen",
+    "periode": "WO 19 T/M MA 24 AUG",
+    "site": "https://festiweer.nl/lowlands",
+    "siteLabel": "FESTIWEER.NL/LOWLANDS",
+    "disclaimer": "NIET VERBONDEN AAN LOWLANDS OF MOJO"
+  },
+  "normaal": {
+    "temp": 22,
+    "label": "normaal eind augustus"
+  },
   "days": [
     "wo 19",
     "do 20",
@@ -61,6 +75,7 @@ window.WEERDATA = {
   "groot": [
     {
       "dag": "VR 21",
+      "datum": "21 AUG",
       "icon": "rain",
       "max": 20,
       "min": 13,
@@ -70,6 +85,7 @@ window.WEERDATA = {
     },
     {
       "dag": "ZA 22",
+      "datum": "22 AUG",
       "icon": "rain",
       "max": 19,
       "min": 12,
@@ -79,6 +95,7 @@ window.WEERDATA = {
     },
     {
       "dag": "ZO 23",
+      "datum": "23 AUG",
       "icon": "drizzle",
       "max": 19,
       "min": 13,

@@ -1,0 +1,22 @@
+/* Lowlands 2026: sunset-gradient van nachtpaars naar oranje, palet van
+   lowlands.nl. Vult de semantische slots van shared/poster.css in. */
+:root {
+  --nacht: #31255F;
+  --licht: #F4EBDA;       /* cream */
+  --donker: #2E1A5E;      /* donkerpaars */
+  --accent: #8FE4B4;      /* mint */
+  --accent2: #F5C531;     /* geel */
+  --signaal: #D8262B;     /* rood */
+  --band: #4A2C8F;        /* paars */
+  --ink: #2A1850;
+  --f-pix: 'Silkscreen', monospace;
+  --f-label: 'Silkscreen', monospace;
+  --f-body: 'Schibsted Grotesk', sans-serif;
+  --dagkolommen: 3;
+  --gradient: linear-gradient(180deg,
+    #31255F 0%, #3B3078 14%, #41549B 30%, #6390B0 46%, #9DBDB4 57%,
+    #D6C49F 68%, #ECAF6B 79%, #E5823A 90%, #DF6E28 100%);
+}
+
+/* LOW uitgerekt zodat hij even breed is als LANDS */
+.merk span:first-child { transform: scaleX(1.66); transform-origin: left; }
