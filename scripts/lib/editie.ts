@@ -20,7 +20,9 @@ export type EditieBasis = {
   kleinRollen: [number, string][];     // reisrollen in "komen en gaan": [index, 'OPBOUW']
   laatsteDagZin?: string;              // bijzin voor een natte laatste dag ('bij het afbreken'); weglaten = geen zin
   normaal: { temp: number; label: string }; // referentielijn in de temperatuurgrafiek
-  kaart: { gradient: string; tekst: string; accent: string }; // festivalkaart op de landingspagina
+  // festivalkaart op de landingspagina; naamStijl = CSS voor de festivalnaam
+  // in de eigen display-font van het festival
+  kaart: { gradient: string; tekst: string; accent: string; naamStijl: string };
 };
 
 export type Editie = EditieBasis & { datums: string[]; days: string[]; dagnamen: string[] };

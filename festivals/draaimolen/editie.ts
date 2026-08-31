@@ -19,5 +19,10 @@ export const EDITIE = maakEditie({
   festivalIdx: [1, 2],
   kleinRollen: [[0, 'DAG ERVOOR'], [3, 'DE DAG ERNA']],
   normaal: { temp: 20, label: 'normaal begin september' },
-  kaart: { gradient: 'linear-gradient(135deg, #060A07 0%, #1E3D2F 45%, #C6BC85 100%)', tekst: '#EEEEEE', accent: '#E8C96A' },
+  kaart: {
+    gradient: 'linear-gradient(135deg, #071110 0%, #1C4A3E 45%, #D2C58B 100%)',
+    tekst: '#EEEEEE',
+    accent: '#E8C96A',
+    naamStijl: "font-family: 'Archivo', sans-serif; font-stretch: 125%; font-weight: 900; font-size: 22px;",
+  },
 });

@@ -12,11 +12,17 @@
     width: 1200px; height: 630px; overflow: hidden; position: relative;
     font-family: 'Archivo', 'Arial Black', sans-serif;
     background: linear-gradient(180deg,
-      #060A07 0%, #0C1912 12%, #14291F 26%, #24452F 38%, #3A573D 46%,
-      #75875D 56%, #A1A56F 66%, #BFB57E 76%, #D4C88E 86%, #E2D8A3 94%, #EDE4B8 100%);
+      #071110 0%, #0C201C 12%, #123129 26%, #1C4A3E 38%, #2E6152 46%,
+      #5D8168 56%, #93997B 66%, #B7AF7E 76%, #D2C58B 86%, #E1D6A0 94%, #EDE4B6 100%);
   }
   .merk { position: absolute; left: 56px; top: 52px; font-weight: 900; font-size: 44px; line-height: 1.12; letter-spacing: 0; color: #EEEEEE; }
   .merk span { display: block; }
+  .merk .rij i { display: inline-block; font-style: normal; -webkit-text-stroke: 1.4px #EEEEEE; color: rgba(238,238,238,0.26); }
+  .merk .rij i:nth-child(5n+1) { transform: translateY(-3px) rotate(-2deg); }
+  .merk .rij i:nth-child(5n+2) { transform: translateY(2px); }
+  .merk .rij i:nth-child(5n+3) { transform: translateY(-1.5px) rotate(1.5deg); }
+  .merk .rij i:nth-child(5n+4) { transform: translateY(3.5px) rotate(-1deg); }
+  .merk .rij i:nth-child(5n+5) { transform: translateY(-2px) rotate(2deg); }
   .merk .jaar { font-size: 30px; margin-top: 6px; }
   .onderwerp { position: absolute; left: 470px; top: 120px; font-weight: 900; font-size: 58px; color: #E8C96A; }
   .regels { position: absolute; left: 472px; top: 220px; font-weight: 500; font-size: 19px; color: #8FD0AC; line-height: 2.1; }
@@ -29,7 +35,7 @@
 </style>
 </head>
 <body>
-  <div class="merk"><span>DRAAI</span><span>MOLEN</span><span class="jaar">2026</span></div>
+  <div class="merk"><span class="rij"><i>D</i><i>R</i><i>A</i><i>A</i><i>I</i></span><span class="rij"><i>M</i><i>O</i><i>L</i><i>E</i><i>N</i></span><span class="jaar">2026</span></div>
   <div class="onderwerp">HET WEER</div>
   <div class="regels">VR 4 + ZA 5 SEP · MOB-COMPLEX TILBURG<br>82 BEREKENINGEN · ELKE 4 UUR VERS</div>
   <div class="hoeksticker"><svg width="30" height="30" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="#0F231C" stroke-width="3"/></svg></div>

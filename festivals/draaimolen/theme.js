@@ -3,7 +3,7 @@
 // gradient en het brede DRAAI/MOLEN-wordmark (Archivo Expanded).
 // Geladen vóór poster.js/share.js; die lezen window.FESTIVAL.
 window.FESTIVAL = {
-  gradient: [[0, '#060A07'], [0.11, '#0C1912'], [0.24, '#14291F'], [0.35, '#24452F'], [0.42, '#3A573D'], [0.50, '#75875D'], [0.58, '#A1A56F'], [0.68, '#BFB57E'], [0.78, '#D4C88E'], [0.88, '#E2D8A3'], [1, '#EDE4B8']],
+  gradient: [[0, '#071110'], [0.11, '#0C201C'], [0.24, '#123129'], [0.35, '#1C4A3E'], [0.42, '#2E6152'], [0.50, '#5D8168'], [0.58, '#93997B'], [0.68, '#B7AF7E'], [0.78, '#D2C58B'], [0.88, '#E1D6A0'], [1, '#EDE4B6']],
   lichtVanaf: 0.56,
 
   fontLoads: ["900 100px Archivo", "500 40px Archivo", "700 36px Inter", "italic 500 27px Inter"],
@@ -77,12 +77,26 @@ window.FESTIVAL = {
     ctx.stroke();
   },
 
+  // outline-letters met per-letter jitter, zoals op de campagnebanner
   wordmarkCanvas(ctx, C, x, y) {
-    ctx.fillStyle = C('--licht');
     ctx.textAlign = 'left';
-    this.displayFont(ctx, 60, 900);
-    ctx.fillText('DRAAI', x, y - 10);
-    ctx.fillText('MOLEN', x, y + 56);
+    const jitter = [-4, 3, -2, 5, -3];
+    const rij = (tekst, y0) => {
+      this.displayFont(ctx, 60, 900);
+      let cx = x;
+      [...tekst].forEach((letter, i) => {
+        const dy = jitter[i % jitter.length];
+        ctx.fillStyle = 'rgba(238,238,238,0.26)';
+        ctx.strokeStyle = C('--licht');
+        ctx.lineWidth = 2;
+        ctx.fillText(letter, cx, y0 + dy);
+        ctx.strokeText(letter, cx, y0 + dy);
+        cx += ctx.measureText(letter).width + 3;
+      });
+    };
+    rij('DRAAI', y - 10);
+    rij('MOLEN', y + 56);
+    ctx.fillStyle = C('--licht');
     this.displayFont(ctx, 38, 900);
     ctx.fillText('2026', x, y + 118);
   },

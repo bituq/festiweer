@@ -3,28 +3,39 @@
    Expanded als vrije stand-in voor Druk Wide) met Inter als bodytekst.
    Vult de semantische slots van shared/poster.css in. */
 :root {
-  --nacht: #060A07;
+  --nacht: #071110;
   --licht: #EEEEEE;       /* gebroken wit van draaimolen.nu */
-  --donker: #0F231C;      /* diep bosgroen */
+  --donker: #0E2B26;      /* teal-zwartgroen uit de campagne */
   --accent: #8FD0AC;      /* chrome-mint van het logo */
-  --accent2: #E8C96A;     /* olijfgoud uit de campagne-gradient */
-  --signaal: #C2472E;     /* aardse rood-oranje uit de orb-beelden */
-  --band: #2E4A3A;
-  --ink: #17251D;
+  --accent2: #E8C96A;     /* goudgele streaks uit het campagnebeeld */
+  --signaal: #C2472E;     /* rood uit de orb-beelden */
+  --band: #2E4A3F;
+  --ink: #16261F;
   --f-pix: 'Archivo', 'Arial Black', sans-serif;
   --f-label: 'Inter', Arial, sans-serif;
   --f-body: 'Inter', Arial, sans-serif;
   --dagkolommen: 2;
   --gradient: linear-gradient(180deg,
-    #060A07 0%, #0C1912 11%, #14291F 24%, #24452F 35%, #3A573D 42%,
-    #75875D 50%, #A1A56F 58%, #BFB57E 68%, #D4C88E 78%, #E2D8A3 88%, #EDE4B8 100%);
+    #071110 0%, #0C201C 11%, #123129 24%, #1C4A3E 35%, #2E6152 42%,
+    #5D8168 50%, #93997B 58%, #B7AF7E 68%, #D2C58B 78%, #E1D6A0 88%, #EDE4B6 100%);
 }
 
 /* Archivo als variabele font: overal de brede (Druk Wide-achtige) instantie */
 * { font-stretch: 125%; }
 
-/* het brede wordmark heeft minder korpsgrootte nodig dan LOW/LANDS */
+/* het brede wordmark heeft minder korpsgrootte nodig dan LOW/LANDS;
+   outline-letters met per-letter jitter, zoals op de campagnebanner */
 .merk { font-size: 30px; letter-spacing: 0; line-height: 1.12; }
+.merk .rij i {
+  display: inline-block; font-style: normal;
+  -webkit-text-stroke: 1px var(--licht);
+  color: color-mix(in srgb, var(--licht) 26%, transparent);
+}
+.merk .rij i:nth-child(5n+1) { transform: translateY(-2px) rotate(-2deg); }
+.merk .rij i:nth-child(5n+2) { transform: translateY(1.5px); }
+.merk .rij i:nth-child(5n+3) { transform: translateY(-1px) rotate(1.5deg); }
+.merk .rij i:nth-child(5n+4) { transform: translateY(2.5px) rotate(-1deg); }
+.merk .rij i:nth-child(5n+5) { transform: translateY(-1.5px) rotate(2deg); }
 .merk .jaar { font-size: 21px; margin-top: 5px; }
 .kop-info .onderwerp { font-size: 14px; }
 .kop-info .regels { font-size: 9px; letter-spacing: 0.5px; }

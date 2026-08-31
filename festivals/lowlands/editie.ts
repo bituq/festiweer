@@ -18,5 +18,10 @@ export const EDITIE = maakEditie({
   kleinRollen: [[0, 'OPBOUW'], [1, 'AANKOMST'], [5, 'NAAR HUIS']],
   laatsteDagZin: 'bij het afbreken',
   normaal: { temp: 22, label: 'normaal eind augustus' },
-  kaart: { gradient: 'linear-gradient(135deg, #31255F 0%, #41549B 45%, #E5823A 100%)', tekst: '#F4EBDA', accent: '#F5C531' },
+  kaart: {
+    gradient: 'linear-gradient(135deg, #31255F 0%, #41549B 45%, #E5823A 100%)',
+    tekst: '#F4EBDA',
+    accent: '#F5C531',
+    naamStijl: "font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 24px; letter-spacing: 1px;",
+  },
 });

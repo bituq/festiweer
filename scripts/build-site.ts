@@ -61,13 +61,41 @@ async function bouwFestival(editie: Editie) {
   console.log(`site/${editie.slug}/ gebouwd`);
 }
 
+// De eigen festiweer-identiteit: een meteogram. Kaartpapier met fijn raster,
+// mono-labels en een bundel ensemble-lijnen die naar rechts uitwaaiert (de
+// onzekerheid groeit) met één blauwe mediaan. De festivalkaarten dragen elk
+// de display-font en gradient van het festival zelf.
+function ensembleLijnen(): string {
+  let seed = 20260905;
+  const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 2 ** 32);
+  const lijn = (dikte: number, kleur: string, alfa: number) => {
+    let y = 110, drift = (rnd() - 0.5) * 2;
+    let pts = `-4,110`;
+    for (let x = 40; x <= 1240; x += 40) {
+      drift += (rnd() - 0.5) * 2.4;
+      y += drift * (x / 1240) * 2.6;
+      y = Math.max(26, Math.min(196, y));
+      pts += ` ${x},${Math.round(y * 10) / 10}`;
+    }
+    return `<polyline points="${pts}" fill="none" stroke="${kleur}" stroke-opacity="${alfa}" stroke-width="${dikte}" stroke-linejoin="round"/>`;
+  };
+  const lijnen: string[] = [];
+  for (let i = 0; i < 19; i++) lijnen.push(lijn(1, '#1C2620', 0.15));
+  lijnen.push(lijn(2.2, '#2456D6', 0.85));
+  return `<svg class="ensemble" viewBox="0 0 1240 220" preserveAspectRatio="none" aria-hidden="true">${lijnen.join('')}</svg>`;
+}
+
 function landing(edities: Editie[]): string {
   const kaarten = edities.map((e) => `
-  <a class="kaart" href="${e.slug}/" style="--kaart-gradient: ${e.kaart.gradient}; --kaart-tekst: ${e.kaart.tekst}; --kaart-accent: ${e.kaart.accent};">
+  <a class="kaart kaart-${e.slug}" href="${e.slug}/">
     <span class="naam">${e.naam.toUpperCase()}</span>
     <span class="meta">${e.periode} · ${e.plaats.toUpperCase()}</span>
     <span class="pijl">NAAR DE VERWACHTING &gt;</span>
   </a>`).join('\n');
+  const kaartStijlen = edities.map((e) => `
+  .kaart-${e.slug} { background: ${e.kaart.gradient}; color: ${e.kaart.tekst}; }
+  .kaart-${e.slug} .naam { ${e.kaart.naamStijl} }
+  .kaart-${e.slug} .pijl { color: ${e.kaart.accent}; }`).join('\n');
 
   return `<!doctype html>
 <html lang="nl">
@@ -82,27 +110,41 @@ ${FAVICON}
 <meta property="og:url" content="https://festiweer.nl/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Schibsted+Grotesk:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;600&family=Silkscreen:wght@700&family=Archivo:wdth,wght@125,900&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; background: #14101F; color: #F4EBDA; font-family: 'Schibsted Grotesk', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 9vh 20px 40px; }
-  .merk { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: clamp(30px, 6.5vw, 54px); letter-spacing: 2px; }
-  .sub { margin-top: 10px; font-size: 15px; color: rgba(244,235,218,0.75); text-align: center; }
-  .kaarten { margin-top: 7vh; display: flex; flex-direction: column; gap: 18px; width: 100%; max-width: 560px; }
-  .kaart { display: flex; flex-direction: column; gap: 7px; padding: 26px 26px 22px; text-decoration: none; box-shadow: 0 10px 34px rgba(0,0,0,0.4); background: var(--kaart-gradient); color: var(--kaart-tekst); }
-  .kaart .naam { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 26px; letter-spacing: 1px; }
-  .kaart .meta { font-family: 'Silkscreen', monospace; font-weight: 400; font-size: 10px; letter-spacing: 1px; opacity: 0.9; }
-  .kaart .pijl { margin-top: 12px; font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 10px; color: var(--kaart-accent); }
+  body {
+    margin: 0; min-height: 100vh; background: #F3F0E6; color: #1C2620;
+    font-family: 'IBM Plex Mono', monospace;
+    background-image:
+      linear-gradient(rgba(28,38,32,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(28,38,32,0.05) 1px, transparent 1px);
+    background-size: 44px 44px;
+    display: flex; flex-direction: column; align-items: center; padding: 0 20px 44px;
+  }
+  header { position: relative; width: 100%; max-width: 640px; padding: 12vh 0 30px; }
+  .ensemble { position: absolute; left: 50%; top: 0; transform: translateX(-50%); width: 120vw; max-width: 1240px; height: 220px; pointer-events: none; }
+  h1 { position: relative; margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: clamp(44px, 9vw, 72px); letter-spacing: -0.02em; line-height: 1; }
+  h1 b { font-weight: 700; color: #2456D6; }
+  .sub { position: relative; margin-top: 14px; font-size: 13px; line-height: 1.7; color: rgba(28,38,32,0.78); max-width: 46ch; }
+  .kaarten { display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 640px; }
+  .kaart { display: flex; flex-direction: column; gap: 8px; padding: 24px 24px 20px; text-decoration: none; border: 1px solid rgba(28,38,32,0.3); box-shadow: 4px 4px 0 rgba(28,38,32,0.18); }
+  .kaart .meta { font-size: 11px; letter-spacing: 0.5px; opacity: 0.92; }
+  .kaart .pijl { margin-top: 14px; font-weight: 600; font-size: 11px; letter-spacing: 0.5px; }
   .kaart:hover .pijl { text-decoration: underline; }
-  footer { margin-top: auto; padding-top: 8vh; font-size: 12px; color: rgba(244,235,218,0.55); text-align: center; line-height: 1.7; max-width: 560px; }
+${kaartStijlen}
+  footer { margin-top: auto; padding-top: 9vh; font-size: 11px; color: rgba(28,38,32,0.55); text-align: center; line-height: 1.8; max-width: 640px; }
 </style>
 </head>
 <body>
-  <div class="merk">FESTIWEER</div>
-  <div class="sub">Festivalweer uit de ensembles: tientallen weerberekeningen, elke 4 uur ververst.</div>
+  <header>
+    ${ensembleLijnen()}
+    <h1>festi<b>weer</b></h1>
+    <div class="sub">Festivalweer uit de ensembles: tientallen weerberekeningen per festival, elke 4 uur ververst, in de designtaal van het festival zelf.</div>
+  </header>
   <div class="kaarten">${kaarten}
   </div>
-  <footer>Onafhankelijk fan-project, niet verbonden aan de festivals of hun organisaties. Modeldata via Open-Meteo (ECMWF, GFS, KNMI Harmonie).</footer>
+  <footer>Onafhankelijk fan-project, niet verbonden aan de festivals of hun organisaties.<br>Modeldata via Open-Meteo (ECMWF, GFS, KNMI Harmonie).</footer>
 </body>
 </html>
 `;
