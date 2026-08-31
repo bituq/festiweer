@@ -1,6 +1,9 @@
-// Rendert de poster uit window.WEERDATA (data.js): kolommen, kaarten en
-// grafieken. Festival-eigen tekenwerk (silhouet, story-wordmark, gradient)
-// komt uit window.FESTIVAL (theme.js). Gedeeld door poster.html en de webversie.
+// Rendert de poster uit window.WEERDATA (data.js). Elke sectie rendert alleen
+// als de poster.html van het festival het element heeft, zodat festivals hun
+// eigen indeling kunnen hebben: kolommen (#groot) of banden (#banden), losse
+// grafieken (#tempChart/#rainChart) of één meteogram (#meteogram), reisrijen
+// (#klein), mm-legende (#mmlegende). Festival-eigen tekenwerk (silhouet,
+// story-wordmark, gradient) komt uit window.FESTIVAL (theme.js).
 const D = window.WEERDATA;
 const F = window.FESTIVAL;
 document.getElementById('verdictKop').textContent = D.verdict.kop;
@@ -33,7 +36,6 @@ function pixelDrops(svg, n, max, vol, leeg, leegOpacity) {
   }
 }
 
-/* ---------- dagkolommen ---------- */
 const DAGNAAM = { MA: 'MAANDAG', DI: 'DINSDAG', WO: 'WOENSDAG', DO: 'DONDERDAG', VR: 'VRIJDAG', ZA: 'ZATERDAG', ZO: 'ZONDAG' };
 const iconImg = (naam) => {
   const img = document.createElement('img');
@@ -42,8 +44,9 @@ const iconImg = (naam) => {
   return img;
 };
 
+/* ---------- dagkolommen ---------- */
 const groot = document.getElementById('groot');
-D.groot.forEach((d) => {
+if (groot) D.groot.forEach((d) => {
   const [afk] = d.dag.split(' ');
   const k = document.createElement('div');
   k.className = 'kolom';
@@ -63,9 +66,32 @@ D.groot.forEach((d) => {
   groot.appendChild(k);
 });
 
+/* ---------- dagbanden ---------- */
+const banden = document.getElementById('banden');
+if (banden) D.groot.forEach((d) => {
+  const [afk] = d.dag.split(' ');
+  const b = document.createElement('div');
+  b.className = 'band';
+  b.innerHTML = `<div class="band-dag">
+      <div class="dagnaam">${DAGNAAM[afk] || afk}</div>
+      <div class="datum">${d.datum}</div>
+    </div>`;
+  b.appendChild(iconImg(d.icon));
+  b.insertAdjacentHTML('beforeend', `
+    <div class="band-temp">
+      <div class="temp">${d.max}<span class="gr">°</span></div>
+      <div class="nacht">'s nachts ${d.min}°</div>
+    </div>
+    <div class="band-rest">
+      <div class="kans">${d.kans}% kans op een bui</div>
+      <div class="conditie">${d.zin.toUpperCase()}</div>
+    </div>`);
+  banden.appendChild(b);
+});
+
 /* ---------- komen en gaan ---------- */
 const klein = document.getElementById('klein');
-D.klein.forEach((d) => {
+if (klein) D.klein.forEach((d) => {
   const r = document.createElement('div');
   r.className = 'reisrij';
   r.appendChild(iconImg(d.icon));
@@ -80,6 +106,7 @@ D.klein.forEach((d) => {
 /* ---------- mm-legende ---------- */
 (function () {
   const wrap = document.getElementById('mmlegende');
+  if (!wrap) return;
   const items = [[1, '1 mm · een spatje'], [2, '2 mm · een buitje'], [3, '5 mm · poncho aan'], [4, '10+ mm · modder']];
   items.forEach(([n, txt]) => {
     const it = document.createElement('div');
@@ -101,11 +128,41 @@ D.klein.forEach((d) => {
 /* ---------- het festival-silhouet ---------- */
 F.silhouetSvg(document.getElementById('silhouet'), C, el);
 
+/* ---------- gedeelde grafiek-hulpen ---------- */
+function tekenTemp(svg, geom) {
+  // temperatuurlijn + band + normaal in een gegeven y-bereik van een svg
+  const { n, x, yT, xEind, ink } = geom;
+  const BEST = D.chartTemp.best, P10 = D.chartTemp.lo, P90 = D.chartTemp.hi;
+
+  let d = 'M' + P90.map((v, i) => `${x(i)},${yT(v)}`).join(' L');
+  d += ' L' + P10.slice().reverse().map((v, j) => `${x(n - 1 - j)},${yT(v)}`).join(' L') + ' Z';
+  el(svg, 'path', { d, fill: C('--band'), opacity: 0.2 });
+
+  el(svg, 'line', { x1: geom.xBegin, y1: yT(D.normaal.temp), x2: xEind, y2: yT(D.normaal.temp), stroke: ink, opacity: 0.55, 'stroke-width': 1, 'stroke-dasharray': '2 4', 'stroke-linecap': 'round' });
+  el(svg, 'text', { x: xEind - 2, y: yT(D.normaal.temp) - 4, 'text-anchor': 'end', 'font-size': 7.5, fill: ink, opacity: 0.75 }, `${D.normaal.label}: ${D.normaal.temp}°`);
+
+  el(svg, 'path', { d: 'M' + BEST.map((v, i) => `${x(i)},${yT(v)}`).join(' L'), fill: 'none', stroke: C('--signaal'), 'stroke-width': 3, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+  BEST.forEach((v, i) => el(svg, 'rect', { x: x(i) - 2.5, y: yT(v) - 2.5, width: 5, height: 5, fill: C('--signaal'), stroke: C('--licht'), 'stroke-width': 1.2 }));
+
+  const gemiddeld = Math.round(BEST.reduce((s, v) => s + v, 0) / BEST.length);
+  // onder het laatste punt, tenzij het label dan op het normaal-label valt
+  let besteY = yT(BEST[n - 1]) + 15;
+  const gekanteld = Math.abs(besteY - (yT(D.normaal.temp) - 4)) < 11;
+  if (gekanteld) besteY = Math.min(yT(BEST[n - 1]) - 7, yT(P90[n - 1]) - 4);
+  el(svg, 'text', { x: x(n - 1) - 2, y: besteY, 'text-anchor': 'end', 'font-family': FLABEL, 'font-weight': 700, 'font-size': 7.5, fill: C('--signaal') }, `BESTE SCHATTING: ROND ${gemiddeld}°`);
+
+  // bandlabel links van het midden; onder de band als het beste-label bovenlangs gaat
+  const li = Math.max(1, Math.floor((n - 1) / 2) - 1);
+  const bandLabelY = gekanteld ? yT(P10[li]) + 12 : yT(P90[li]) - 3;
+  el(svg, 'text', { x: x(li), y: bandLabelY, 'text-anchor': 'middle', 'font-family': FLABEL, 'font-weight': 700, 'font-size': 7.5, fill: C('--band') }, 'VRIJWEL ZEKER HIER TUSSENIN');
+}
+
 /* ---------- temperatuurgrafiek ---------- */
 (function () {
   const svg = document.getElementById('tempChart');
+  if (!svg) return;
   const DAYS = D.days, n = DAYS.length;
-  const BEST = D.chartTemp.best, P10 = D.chartTemp.lo, P90 = D.chartTemp.hi;
+  const P10 = D.chartTemp.lo, P90 = D.chartTemp.hi;
   const W = 356, H = 122, m = { l: 26, r: 8, t: 11, b: 15 };
   const plotW = W - m.l - m.r, plotH = H - m.t - m.b;
   const yMin = Math.min(D.normaal.temp - 6, Math.floor(Math.min(...P10)) - 1);
@@ -121,36 +178,14 @@ F.silhouetSvg(document.getElementById('silhouet'), C, el);
     el(svg, 'text', { x: m.l - 5, y: y(t) + 2.5, 'text-anchor': 'end', 'font-size': 7.5, fill: ink, opacity: 0.8 }, t + '°');
   });
 
-  // band waar vrijwel alle berekeningen tussen zitten
-  let d = 'M' + P90.map((v, i) => `${x(i)},${y(v)}`).join(' L');
-  d += ' L' + P10.slice().reverse().map((v, j) => `${x(n - 1 - j)},${y(v)}`).join(' L') + ' Z';
-  el(svg, 'path', { d, fill: C('--band'), opacity: 0.2 });
-
-  // wat is normaal voor de tijd van het jaar
-  el(svg, 'line', { x1: m.l, y1: y(D.normaal.temp), x2: W - m.r, y2: y(D.normaal.temp), stroke: ink, opacity: 0.55, 'stroke-width': 1, 'stroke-dasharray': '2 4', 'stroke-linecap': 'round' });
-  el(svg, 'text', { x: W - m.r - 2, y: y(D.normaal.temp) - 4, 'text-anchor': 'end', 'font-size': 7.5, fill: ink, opacity: 0.75 }, `${D.normaal.label}: ${D.normaal.temp}°`);
-
-  // beste schatting
-  el(svg, 'path', { d: 'M' + BEST.map((v, i) => `${x(i)},${y(v)}`).join(' L'), fill: 'none', stroke: C('--signaal'), 'stroke-width': 3, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
-  BEST.forEach((v, i) => el(svg, 'rect', { x: x(i) - 2.5, y: y(v) - 2.5, width: 5, height: 5, fill: C('--signaal'), stroke: C('--licht'), 'stroke-width': 1.2 }));
-  const gemiddeld = Math.round(BEST.reduce((s, v) => s + v, 0) / BEST.length);
-  // onder het laatste punt, tenzij het label dan op het normaal-label valt
-  let besteY = y(BEST[n - 1]) + 15;
-  const gekanteld = Math.abs(besteY - (y(D.normaal.temp) - 4)) < 11;
-  if (gekanteld) besteY = y(BEST[n - 1]) - 7;
-  el(svg, 'text', { x: x(n - 1) - 2, y: besteY, 'text-anchor': 'end', 'font-family': FLABEL, 'font-weight': 700, 'font-size': 7.5, fill: C('--signaal') }, `BESTE SCHATTING: ROND ${gemiddeld}°`);
-
-  // bandlabel links van het midden; onder de band als het beste-label bovenlangs gaat
-  const li = Math.max(1, Math.floor((n - 1) / 2) - 1);
-  const bandLabelY = gekanteld ? y(P10[li]) + 12 : y(P90[li]) - 3;
-  el(svg, 'text', { x: x(li), y: bandLabelY, 'text-anchor': 'middle', 'font-family': FLABEL, 'font-weight': 700, 'font-size': 7.5, fill: C('--band') }, 'VRIJWEL ZEKER HIER TUSSENIN');
-
+  tekenTemp(svg, { n, x, yT: y, xBegin: m.l, xEind: W - m.r, ink });
   DAYS.forEach((dg, i) => el(svg, 'text', { x: x(i), y: H - 4, 'text-anchor': 'middle', 'font-family': FLABEL, 'font-weight': 700, 'font-size': 7, fill: ink, opacity: 0.85 }, dg));
 })();
 
 /* ---------- regengrafiek ---------- */
 (function () {
   const svg = document.getElementById('rainChart');
+  if (!svg) return;
   const DAYS = D.days, n = DAYS.length;
   const MED = D.chartRain.med, P90 = D.chartRain.p90;
   const W = 356, H = 106, m = { l: 10, r: 64, t: 11, b: 15 };
@@ -179,4 +214,52 @@ F.silhouetSvg(document.getElementById('silhouet'), C, el);
   el(svg, 'text', { x: x(0) + 9, y: y(P90[0]) - 4, 'font-family': FLABEL, 'font-weight': 700, 'font-size': 7, fill: C('--signaal') }, 'ALS HET TEGENZIT');
 
   DAYS.forEach((dg, i) => el(svg, 'text', { x: x(i), y: H - 4, 'text-anchor': 'middle', 'font-family': FLABEL, 'font-weight': 700, 'font-size': 7, fill: ink, opacity: 0.85 }, dg));
+})();
+
+/* ---------- meteogram: temperatuur en regen in één paneel ---------- */
+(function () {
+  const svg = document.getElementById('meteogram');
+  if (!svg) return;
+  const DAYS = D.days, n = DAYS.length;
+  const P10 = D.chartTemp.lo, P90 = D.chartTemp.hi;
+  const MED = D.chartRain.med, RP90 = D.chartRain.p90;
+  const W = 736, H = 170, m = { l: 30, r: 10, t: 14, b: 20 };
+  const plotW = W - m.l - m.r, plotH = H - m.t - m.b;
+  const x = (i) => m.l + (i + 0.5) * plotW / n;
+  const ink = C('--ink');
+
+  // temperatuur in de bovenste ~60%, regenbalkjes vanaf de basislijn omhoog
+  const yMin = Math.min(D.normaal.temp - 6, Math.floor(Math.min(...P10)) - 1);
+  const yMax = Math.max(D.normaal.temp + 4.5, Math.ceil(Math.max(...P90)) + 0.5);
+  const tempH = plotH * 0.60;
+  const yT = (v) => m.t + (yMax - v) / (yMax - yMin) * tempH;
+  const base = H - m.b;
+  const regenMax = Math.max(6, Math.ceil(Math.max(...RP90)) + 1);
+  const yR = (v) => base - (v / regenMax) * (plotH * 0.30);
+
+  const ticks = [];
+  for (let t = Math.ceil(yMin / 4) * 4; t < yMax; t += 4) ticks.push(t);
+  ticks.forEach((t) => {
+    el(svg, 'line', { x1: m.l, y1: yT(t), x2: W - m.r, y2: yT(t), stroke: ink, opacity: 0.16, 'stroke-width': 1 });
+    el(svg, 'text', { x: m.l - 5, y: yT(t) + 2.5, 'text-anchor': 'end', 'font-size': 7.5, fill: ink, opacity: 0.8 }, t + '°');
+  });
+  el(svg, 'line', { x1: m.l, y1: base, x2: W - m.r, y2: base, stroke: ink, opacity: 0.45, 'stroke-width': 1 });
+
+  // regen onderin, met de tegenzit-tick erboven
+  const bw = Math.min(34, plotW / n * 0.28);
+  let natste = 0;
+  MED.forEach((v, i) => { if (RP90[i] > RP90[natste]) natste = i; });
+  MED.forEach((v, i) => {
+    const cx = x(i), yt = yR(v);
+    if (v > 0.05) el(svg, 'rect', { x: cx - bw / 2, y: yt, width: bw, height: base - yt, fill: C('--donker') });
+    const yp = yR(RP90[i]);
+    el(svg, 'line', { x1: cx, y1: Math.min(yt - 2, base - 2), x2: cx, y2: yp, stroke: C('--signaal'), 'stroke-width': 1.6, opacity: 0.85 });
+    el(svg, 'line', { x1: cx - 6, y1: yp, x2: cx + 6, y2: yp, stroke: C('--signaal'), 'stroke-width': 2.2 });
+    if (v >= 0.3) el(svg, 'text', { x: cx + bw / 2 + 4, y: yt + 6, 'font-size': 7, fill: ink, opacity: 0.8 }, `${v} mm`);
+  });
+  el(svg, 'text', { x: x(natste) + 10, y: yR(RP90[natste]) - 4, 'font-family': FLABEL, 'font-weight': 700, 'font-size': 7, fill: C('--signaal') }, 'ALS HET TEGENZIT');
+  el(svg, 'text', { x: m.l, y: base - 4, 'font-family': FLABEL, 'font-weight': 700, 'font-size': 7, fill: ink, opacity: 0.7 }, 'REGEN (MM)');
+
+  tekenTemp(svg, { n, x, yT, xBegin: m.l, xEind: W - m.r, ink });
+  DAYS.forEach((dg, i) => el(svg, 'text', { x: x(i), y: H - 4, 'text-anchor': 'middle', 'font-family': FLABEL, 'font-weight': 700, 'font-size': 7.5, fill: ink, opacity: 0.85 }, dg));
 })();

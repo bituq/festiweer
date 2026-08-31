@@ -91,7 +91,7 @@ body { background: var(--nacht); }
   .reisrij .feiten { font-size: 13px; }
   .reisrij .zin { font-size: 12px; }
   .buienregel { grid-column: 1; font-size: 12px; margin-top: 4px; }
-  #silhouet { position: static; grid-column: 1; justify-self: end; width: 150px; height: 230px; margin: -10px 4px -12px 0; }
+  .onder #silhouet { position: static; grid-column: 1; justify-self: end; width: 150px; height: 230px; margin: -10px 4px -12px 0; }
 
   footer { padding: 12px 16px 10px; }
   footer .rij { flex-wrap: wrap; }

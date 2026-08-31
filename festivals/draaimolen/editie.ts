@@ -17,7 +17,7 @@ export const EDITIE = maakEditie({
   start: '2026-09-03',
   end: '2026-09-06',
   festivalIdx: [1, 2],
-  kleinRollen: [[0, 'DAG ERVOOR'], [3, 'DE DAG ERNA']],
+  kleinRollen: [],
   normaal: { temp: 20, label: 'normaal begin september' },
   kaart: {
     gradient: 'linear-gradient(135deg, #071110 0%, #1C4A3E 45%, #D2C58B 100%)',

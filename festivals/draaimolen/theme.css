@@ -1,6 +1,7 @@
-/* Draaimolen 2026, naar de campagne op draaimolen.nu: diep bosgroen dat
-   oplost in olijfgoud, gebroken wit (#EEE), brede vette grotesk (Archivo
-   Expanded als vrije stand-in voor Druk Wide) met Inter als bodytekst.
+/* Draaimolen 2026, naar de campagne op draaimolen.nu: teal-groen dat oplost
+   in olijfgoud, gebroken wit (#EEE), brede vette grotesk (Archivo Expanded als
+   vrije stand-in voor Druk Wide) met Inter als bodytekst. Eigen indeling:
+   dagbanden in plaats van kolommen, één meteogram, dennen-skyline onderin.
    Vult de semantische slots van shared/poster.css in. */
 :root {
   --nacht: #071110;
@@ -14,7 +15,6 @@
   --f-pix: 'Archivo', 'Arial Black', sans-serif;
   --f-label: 'Inter', Arial, sans-serif;
   --f-body: 'Inter', Arial, sans-serif;
-  --dagkolommen: 2;
   --gradient: linear-gradient(180deg,
     #071110 0%, #0C201C 11%, #123129 24%, #1C4A3E 35%, #2E6152 42%,
     #5D8168 50%, #93997B 58%, #B7AF7E 68%, #D2C58B 78%, #E1D6A0 88%, #EDE4B6 100%);
@@ -39,18 +39,47 @@
 .merk .jaar { font-size: 21px; margin-top: 5px; }
 .kop-info .onderwerp { font-size: 14px; }
 .kop-info .regels { font-size: 9px; letter-spacing: 0.5px; }
-.kolom .dagnaam { font-size: 12px; }
-.kolom .temp { font-size: 38px; }
 #verdictKop { font-size: 16.5px; }
-.grafieken h2, .onder h2 { font-size: 11px; }
-.kolom .conditie { font-size: 7.5px; }
+.grafieken h2 { font-size: 11px; }
 .buienregel { font-size: 10px; }
 footer .site { font-size: 8.5px; }
-.reisrij .rol { font-size: 7.5px; }
 
-/* twee festivaldagen: geef de kolommen wat meer binnenlucht */
-.kolom { padding: 2px 34px; }
+/* ---------- de twee festivaldagen als brede banden ---------- */
+.dagen { margin-top: 24px; padding: 0 30px; }
+.band {
+  display: grid; grid-template-columns: 150px 96px 150px 1fr;
+  align-items: center; column-gap: 22px; padding: 18px 8px;
+}
+.band + .band { border-top: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); }
+.band .dagnaam { font-family: var(--f-pix); font-weight: 900; font-size: 19px; color: var(--accent); }
+.band .datum { font-family: var(--f-pix); font-weight: 500; font-size: 10px; color: var(--licht); letter-spacing: 1px; margin-top: 4px; }
+.band .icon { width: 96px; height: 96px; object-fit: contain; }
+.band .temp { font-family: var(--f-pix); font-weight: 900; font-size: 52px; line-height: 1; color: var(--licht); }
+.band .temp .gr { font-family: var(--f-body); font-weight: 700; font-size: 30px; vertical-align: 13px; }
+.band .nacht { font-size: 10px; color: color-mix(in srgb, var(--licht) 80%, transparent); margin-top: 4px; }
+.band .kans { font-size: 12px; font-weight: 700; color: var(--licht); }
+.band .conditie { font-family: var(--f-pix); font-weight: 900; font-size: 9px; color: var(--accent2); margin-top: 7px; letter-spacing: 0.5px; }
+
+/* ---------- één meteogram over de volle breedte ---------- */
+.grafieken { grid-template-columns: 1fr; margin-top: 22px; }
+
+/* ---------- staart: buienregel + dennen-skyline over de volle breedte ---------- */
+.staart { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; position: relative; }
+.staart .buienregel { padding: 0 30px; position: relative; z-index: 2; margin-bottom: -12px; }
+#silhouet { display: block; width: 100%; height: 148px; }
 
 /* de orb als merkteken in plaats van een pixel-glyph */
 .hoeksticker svg { width: 20px; height: 20px; }
 footer .glyph { width: 15px; height: 15px; }
+
+/* ---------- mobiel ---------- */
+@media (max-width: 680px) {
+  .dagen { padding: 0 16px; }
+  .band { grid-template-columns: 1fr 1fr; row-gap: 10px; padding: 20px 4px; }
+  .band .dagnaam { font-size: 17px; }
+  .band .icon { width: 108px; height: 108px; justify-self: end; }
+  .band .temp { font-size: 58px; }
+  .band .nacht, .band .kans { font-size: 13px; }
+  .band .conditie { font-size: 10px; }
+  .staart .buienregel { padding: 0 16px; margin-bottom: -6px; }
+}

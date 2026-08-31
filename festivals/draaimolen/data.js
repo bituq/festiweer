@@ -1,6 +1,6 @@
 window.WEERDATA = {
-  "runAt": "2026-08-31T09:05:57.252Z",
-  "runAtText": "31 augustus 2026, 11:05",
+  "runAt": "2026-08-31T10:08:09.063Z",
+  "runAtText": "31 augustus 2026, 12:08",
   "leden": 82,
   "festival": {
     "slug": "draaimolen",
@@ -82,20 +82,5 @@ window.WEERDATA = {
       "zin": "vrijwel zeker droog"
     }
   ],
-  "klein": [
-    {
-      "rol": "DAG ERVOOR · DO 3",
-      "icon": "partly-cloudy-day",
-      "max": 23,
-      "kans": 44,
-      "zin": "kans op een buitje, en stevige wind: zet alles goed vast"
-    },
-    {
-      "rol": "DE DAG ERNA · ZO 6",
-      "icon": "clear-day",
-      "max": 24,
-      "kans": 11,
-      "zin": "waarschijnlijk droog"
-    }
-  ]
+  "klein": []
 };
