@@ -7,8 +7,8 @@
 
 import { SLUGS, laadEditie } from '../festivals/index';
 import type { Editie } from './lib/editie';
-import { haalEnsemble, haalHarmonie, haalBias } from './lib/openmeteo';
-import { berekenDagen, bouwWeerdata } from './lib/weerdata';
+import { haalEnsemble, haalEnsembleUur, haalHarmonie, haalBias } from './lib/openmeteo';
+import { berekenDagen, bouwWeerdata, bouwUurlijks } from './lib/weerdata';
 import { r1 } from './lib/statistiek';
 
 async function verwerk(editie: Editie) {
@@ -26,7 +26,8 @@ async function verwerk(editie: Editie) {
 
   const vandaag = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Amsterdam' }).format(new Date());
   const dagen = berekenDagen(editie, ec, gfs, harmonie, bias, vandaag);
-  const WEERDATA = bouwWeerdata(editie, dagen, new Date());
+  const WEERDATA: Record<string, unknown> = bouwWeerdata(editie, dagen, new Date());
+  if (editie.uurlijks) WEERDATA.uurlijks = bouwUurlijks(await haalEnsembleUur(editie, 'ecmwf_ifs025'), bias);
 
   await Bun.write(new URL(`../festivals/${editie.slug}/data.js`, import.meta.url), 'window.WEERDATA = ' + JSON.stringify(WEERDATA, null, 2) + ';\n');
   console.log(`${editie.slug}: data.js geschreven · ${WEERDATA.leden} leden · run ${WEERDATA.runAtText}`);

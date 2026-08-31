@@ -216,10 +216,72 @@ function tekenTemp(svg, geom) {
   DAYS.forEach((dg, i) => el(svg, 'text', { x: x(i), y: H - 4, 'text-anchor': 'middle', 'font-family': FLABEL, 'font-weight': 700, 'font-size': 7, fill: ink, opacity: 0.85 }, dg));
 })();
 
-/* ---------- meteogram: temperatuur en regen in één paneel ---------- */
+/* ---------- meteogram (uurlijks): temperatuur en regen in één paneel ---------- */
 (function () {
   const svg = document.getElementById('meteogram');
-  if (!svg) return;
+  if (!svg || !D.uurlijks) return;
+  const U = D.uurlijks, N = U.tijden.length;
+  const W = 736, H = 190, m = { l: 30, r: 26, t: 16, b: 26 };
+  const plotW = W - m.l - m.r, plotH = H - m.t - m.b;
+  const x = (i) => m.l + i * plotW / (N - 1);
+  const base = H - m.b;
+  const ink = C('--ink');
+
+  // temperatuur in de bovenste ~2/3
+  const yMin = Math.floor(Math.min(...U.temp.lo)) - 1;
+  const yMax = Math.ceil(Math.max(...U.temp.hi)) + 1;
+  const yT = (v) => m.t + (yMax - v) / (yMax - yMin) * (plotH * 0.66);
+  for (let t = Math.ceil(yMin / 4) * 4; t <= yMax; t += 4) {
+    el(svg, 'line', { x1: m.l, y1: yT(t), x2: W - m.r, y2: yT(t), stroke: ink, opacity: 0.16, 'stroke-width': 1 });
+    el(svg, 'text', { x: m.l - 5, y: yT(t) + 2.5, 'text-anchor': 'end', 'font-size': 7.5, fill: ink, opacity: 0.8 }, t + '°');
+  }
+  el(svg, 'line', { x1: m.l, y1: base, x2: W - m.r, y2: base, stroke: ink, opacity: 0.45, 'stroke-width': 1 });
+
+  // dag-scheidingen op middernacht + daglabels gecentreerd per dag
+  U.tijden.forEach((t, i) => {
+    if (i > 0 && t.endsWith('T00:00')) el(svg, 'line', { x1: x(i), y1: m.t, x2: x(i), y2: base, stroke: ink, opacity: 0.25, 'stroke-width': 1, 'stroke-dasharray': '2 4' });
+  });
+  D.days.forEach((dg, d) => {
+    const i0 = d * 24, i1 = Math.min(N - 1, i0 + 23);
+    if (i0 >= N) return;
+    el(svg, 'text', { x: x((i0 + i1) / 2), y: H - 6, 'text-anchor': 'middle', 'font-family': FLABEL, 'font-weight': 700, 'font-size': 7.5, fill: ink, opacity: 0.85 }, dg);
+  });
+
+  // regen als 3-uursblokjes vanaf de basislijn, met mm-as rechts
+  const blokken = [];
+  for (let b = 0; b * 3 < N; b++) {
+    blokken.push(U.regen.slice(b * 3, b * 3 + 3).reduce((s, v) => s + v, 0));
+  }
+  const regenMax = Math.max(3, Math.ceil(Math.max(...blokken)));
+  const yR = (v) => base - (v / regenMax) * (plotH * 0.28);
+  const bw = plotW / blokken.length * 0.55;
+  blokken.forEach((v, b) => {
+    if (v < 0.05) return;
+    const cx = x(Math.min(N - 1, b * 3 + 1));
+    el(svg, 'rect', { x: cx - bw / 2, y: yR(v), width: bw, height: base - yR(v), fill: C('--donker') });
+  });
+  for (let v = 1; v <= regenMax; v += Math.ceil(regenMax / 3)) {
+    el(svg, 'text', { x: W - m.r + 4, y: yR(v) + 2.5, 'font-size': 7, fill: ink, opacity: 0.8 }, `${v}`);
+  }
+  el(svg, 'text', { x: W - m.r + 4, y: yR(regenMax) - 7, 'font-size': 6.5, fill: ink, opacity: 0.7 }, 'mm');
+
+  // temperatuurband + mediaan
+  let d = 'M' + U.temp.hi.map((v, i) => `${x(i)},${yT(v)}`).join(' L');
+  d += ' L' + U.temp.lo.slice().reverse().map((v, j) => `${x(N - 1 - j)},${yT(v)}`).join(' L') + ' Z';
+  el(svg, 'path', { d, fill: C('--signaal'), opacity: 0.16 });
+  el(svg, 'path', { d: 'M' + U.temp.best.map((v, i) => `${x(i)},${yT(v)}`).join(' L'), fill: 'none', stroke: C('--signaal'), 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+
+  // legenda linksboven
+  el(svg, 'line', { x1: m.l + 4, y1: m.t + 4, x2: m.l + 18, y2: m.t + 4, stroke: C('--signaal'), 'stroke-width': 2 });
+  el(svg, 'text', { x: m.l + 23, y: m.t + 7, 'font-family': FLABEL, 'font-weight': 700, 'font-size': 7, fill: ink, opacity: 0.85 }, 'TEMPERATUUR, MET DE BAND WAAR VRIJWEL ALLE BEREKENINGEN TUSSEN ZITTEN');
+  el(svg, 'rect', { x: m.l + 6, y: m.t + 12, width: 10, height: 6, fill: C('--donker') });
+  el(svg, 'text', { x: m.l + 23, y: m.t + 18, 'font-family': FLABEL, 'font-weight': 700, 'font-size': 7, fill: ink, opacity: 0.85 }, 'REGEN (MM PER 3 UUR)');
+})();
+
+/* ---------- meteogram (per dag): fallback zonder uurdata ---------- */
+(function () {
+  const svg = document.getElementById('meteogram');
+  if (!svg || D.uurlijks) return;
   const DAYS = D.days, n = DAYS.length;
   const P10 = D.chartTemp.lo, P90 = D.chartTemp.hi;
   const MED = D.chartRain.med, RP90 = D.chartRain.p90;

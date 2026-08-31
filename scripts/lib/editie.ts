@@ -19,6 +19,7 @@ export type EditieBasis = {
   festivalIdx: number[];               // indices in het dagen-array: de festivaldagen zelf
   kleinRollen: [number, string][];     // reisrollen in "komen en gaan": [index, 'OPBOUW']
   laatsteDagZin?: string;              // bijzin voor een natte laatste dag ('bij het afbreken'); weglaten = geen zin
+  uurlijks?: boolean;                  // uurlijkse reeks in data.js voor een uur-meteogram
   normaal: { temp: number; label: string }; // referentielijn in de temperatuurgrafiek
   // festivalkaart op de landingspagina; naamStijl = CSS voor de festivalnaam
   // in de eigen display-font van het festival

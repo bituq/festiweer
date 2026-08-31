@@ -5,6 +5,7 @@ import type { Editie } from './editie';
 const VARS = 'temperature_2m_max,temperature_2m_min,precipitation_sum,wind_gusts_10m_max';
 
 export type EnsembleDaily = Record<string, unknown> & { time: string[] };
+export type EnsembleHourly = Record<string, unknown> & { time: string[] };
 export type HarmonieTemp = Record<string, { max: number; min: number }>;
 
 type Plek = Pick<Editie, 'lat' | 'lon' | 'start' | 'end'>;
@@ -15,6 +16,17 @@ export async function haalEnsemble(editie: Plek, model: string): Promise<Ensembl
   if (!res.ok) throw new Error(`${model}: HTTP ${res.status}`);
   const d = (await res.json()).daily;
   if (!d?.time?.length) throw new Error(`${model}: geen daily data`);
+  return d;
+}
+
+// Uurdata voor het meteogram (alleen ECMWF: uurlijkse resolutie, en de
+// temperatuur draait toch al op de EC-leden).
+export async function haalEnsembleUur(editie: Plek, model: string): Promise<EnsembleHourly> {
+  const url = `https://ensemble-api.open-meteo.com/v1/ensemble?latitude=${editie.lat}&longitude=${editie.lon}&hourly=temperature_2m,precipitation&models=${model}&timezone=Europe%2FAmsterdam&start_date=${editie.start}&end_date=${editie.end}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${model} uur: HTTP ${res.status}`);
+  const d = (await res.json()).hourly;
+  if (!d?.time?.length) throw new Error(`${model} uur: geen hourly data`);
   return d;
 }
 

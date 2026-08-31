@@ -5,7 +5,7 @@ Weerposters en -sites voor festivals, elk in de designtaal van het festival zelf
 ## Festivals
 
 - **lowlands** — sunset-gradient van nachtpaars naar oranje, Silkscreen-pixeltypografie, eigen pixel-weericonen, de festivaltorens als silhouet (palet van lowlands.nl 2026).
-- **draaimolen** — naar de 2026-campagne op draaimolen.nu: diep bosgroen dat oplost in olijfgoud, brede vette grotesk (Archivo Expanded als vrije stand-in voor hun Druk Wide) met Inter, dennen van het MOB-complex met de zwevende glas-orb, en een eigen organische iconenset.
+- **draaimolen** — naar de 2026-campagne op draaimolen.nu: teal-groen dat oplost in olijfgoud, brede vette grotesk in outline met verspringende letters (Archivo Expanded als vrije stand-in voor hun Druk Wide) met Inter, en een eigen indeling: dagbanden, een uurlijks meteogram en de dennen-skyline met glas-orb over de volle breedte.
 
 ## Hoe het werkt
 
@@ -17,7 +17,7 @@ Weerposters en -sites voor festivals, elk in de designtaal van het festival zelf
   - `data.js` — de doorgerekende verwachting (`window.WEERDATA`), gecommit zodat de laatste stand bevroren blijft na afloop van het festival.
   - optioneel `icons/` — een eigen iconenset; anders wordt de gedeelde pixel-set gebruikt.
   - `og.html` + `og.png` — de share-image (eenmalig lokaal gerenderd).
-- `shared/` is de engine, festival-agnostisch: `poster.css` (layout op de kleur-slots), `poster.js` (kolommen, kaarten, grafieken), `share.js` (deelbalk + Instagram-story), `web.css` (responsive overrides), `icons/` (pixel-set).
+- `shared/` is de engine, festival-agnostisch: `poster.css` (layout op de kleur-slots), `poster.js` (rendert alleen de secties die in de poster.html van het festival staan: kolommen of dagbanden, losse grafieken of één meteogram, reisrijen), `share.js` (deelbalk + Instagram-story), `web.css` (responsive overrides), `icons/` (pixel-set). Met `uurlijks: true` in de editie-config komt er een uurlijkse EC-reeks in data.js voor het meteogram.
 - `scripts/fetch-data.ts [slug]` haalt de modeldata op en schrijft `festivals/<slug>/data.js`; zonder argument alle festivals. Na de einddatum van een festival slaat hij dat festival over. De inhoud zit in `scripts/lib/`: `editie` (type), `openmeteo` (API's), `statistiek` (kwantielen + kalibratie), `weerdata` (cijfers + teksten).
 - `scripts/build-site.ts` bouwt alles naar `site/`: per festival een map (webversie met OG-tags + alle assets) en op de root een landingspagina uit de configs.
 - `scripts/render.ts` rendert PDF's en PNG's (leunt op de Puppeteer-install van de pdf-generator skill in `~/.claude/skills/pdf-generator`).

@@ -3,7 +3,7 @@
 
 import type { Editie } from './editie';
 import { stats, kalibreer, r1 } from './statistiek';
-import type { EnsembleDaily, HarmonieTemp } from './openmeteo';
+import type { EnsembleDaily, EnsembleHourly, HarmonieTemp } from './openmeteo';
 
 export type Dag = {
   best: number; lo: number; hi: number;
@@ -113,6 +113,25 @@ function verdict(editie: Editie, dagen: Dag[]) {
   }
   zinnen.push(`Dit zeggen ${dagen[0].leden} weerberekeningen, en ze zeggen bijna allemaal hetzelfde.`);
   return { kop, tekst: zinnen.join(' ') };
+}
+
+// Uurreeks voor het meteogram: per uur de temperatuur-kwantielen over de
+// EC-leden (met dezelfde biascorrectie als de dagcijfers) en de regen als
+// ensemblegemiddelde (de mediaan van uurlijkse neerslag is vrijwel altijd 0).
+export function bouwUurlijks(uur: EnsembleHourly, bias: number) {
+  const best: number[] = [], lo: number[] = [], hi: number[] = [], regen: number[] = [];
+  uur.time.forEach((_, i) => {
+    const t = stats([uur], 'temperature_2m', i);
+    best.push(r1(t.med - bias));
+    lo.push(r1(t.p10 - bias));
+    hi.push(r1(t.p90 - bias));
+    const leden = Object.keys(uur)
+      .filter((k) => k === 'precipitation' || k.startsWith('precipitation_member'))
+      .map((k) => (uur[k] as (number | null)[])[i])
+      .filter((v): v is number => v != null);
+    regen.push(r1(leden.reduce((s, v) => s + v, 0) / (leden.length || 1)));
+  });
+  return { tijden: uur.time, temp: { best, lo, hi }, regen };
 }
 
 // Datumregel onder de dagnaam op de grote kaarten: '21 AUG'.

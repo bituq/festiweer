@@ -23,12 +23,11 @@
 /* Archivo als variabele font: overal de brede (Druk Wide-achtige) instantie */
 * { font-stretch: 125%; }
 
-/* het brede wordmark heeft minder korpsgrootte nodig dan LOW/LANDS;
-   outline-letters met per-letter jitter, zoals op de campagnebanner */
-.merk { font-size: 30px; letter-spacing: 0; line-height: 1.12; }
+/* groot outline-wordmark met per-letter jitter, zoals op de campagnebanner */
+.merk { font-size: 54px; letter-spacing: 0; line-height: 1.14; }
 .merk .rij i {
   display: inline-block; font-style: normal;
-  -webkit-text-stroke: 1px var(--licht);
+  -webkit-text-stroke: 1.5px var(--licht);
   color: color-mix(in srgb, var(--licht) 26%, transparent);
 }
 .merk .rij i:nth-child(5n+1) { transform: translateY(-2px) rotate(-2deg); }
@@ -36,36 +35,41 @@
 .merk .rij i:nth-child(5n+3) { transform: translateY(-1px) rotate(1.5deg); }
 .merk .rij i:nth-child(5n+4) { transform: translateY(2.5px) rotate(-1deg); }
 .merk .rij i:nth-child(5n+5) { transform: translateY(-1.5px) rotate(2deg); }
-.merk .jaar { font-size: 21px; margin-top: 5px; }
-.kop-info .onderwerp { font-size: 14px; }
+.merk .jaar { font-size: 34px; margin-top: 8px; }
+.kop-info { padding-top: 8px; }
+.kop-info .onderwerp { font-size: 15px; }
 .kop-info .regels { font-size: 9px; letter-spacing: 0.5px; }
-#verdictKop { font-size: 16.5px; }
+
+/* het verdict rechts in de kop, onder de infregels */
+.kop-info #verdictKop { font-family: var(--f-pix); font-weight: 900; font-size: 14.5px; color: var(--accent2); margin: 20px 0 7px; }
+.kop-info #verdictTekst { margin: 0 0 0 auto; max-width: 330px; font-size: 10px; line-height: 1.6; color: var(--licht); }
+
 .grafieken h2 { font-size: 11px; }
-.buienregel { font-size: 10px; }
+.grafiekkop { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.buienregel { font-family: var(--f-pix); font-weight: 900; font-size: 8px; color: var(--donker); letter-spacing: 0.5px; }
 footer .site { font-size: 8.5px; }
 
 /* ---------- de twee festivaldagen als brede banden ---------- */
-.dagen { margin-top: 24px; padding: 0 30px; }
+.dagen { margin-top: 20px; padding: 0 30px; }
 .band {
-  display: grid; grid-template-columns: 150px 96px 150px 1fr;
-  align-items: center; column-gap: 22px; padding: 18px 8px;
+  display: grid; grid-template-columns: 185px 108px 165px 1fr;
+  align-items: center; column-gap: 24px; padding: 22px 8px;
 }
-.band + .band { border-top: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); }
-.band .dagnaam { font-family: var(--f-pix); font-weight: 900; font-size: 19px; color: var(--accent); }
-.band .datum { font-family: var(--f-pix); font-weight: 500; font-size: 10px; color: var(--licht); letter-spacing: 1px; margin-top: 4px; }
-.band .icon { width: 96px; height: 96px; object-fit: contain; }
-.band .temp { font-family: var(--f-pix); font-weight: 900; font-size: 52px; line-height: 1; color: var(--licht); }
-.band .temp .gr { font-family: var(--f-body); font-weight: 700; font-size: 30px; vertical-align: 13px; }
-.band .nacht { font-size: 10px; color: color-mix(in srgb, var(--licht) 80%, transparent); margin-top: 4px; }
-.band .kans { font-size: 12px; font-weight: 700; color: var(--licht); }
-.band .conditie { font-family: var(--f-pix); font-weight: 900; font-size: 9px; color: var(--accent2); margin-top: 7px; letter-spacing: 0.5px; }
+.band + .band { border-top: 2px solid color-mix(in srgb, var(--accent) 45%, transparent); }
+.band .dagnaam { font-family: var(--f-pix); font-weight: 900; font-size: 24px; color: var(--accent); }
+.band .datum { font-family: var(--f-pix); font-weight: 500; font-size: 11px; color: var(--licht); letter-spacing: 1px; margin-top: 5px; }
+.band .icon { width: 104px; height: 104px; object-fit: contain; }
+.band .temp { font-family: var(--f-pix); font-weight: 900; font-size: 60px; line-height: 1; color: var(--licht); }
+.band .temp .gr { font-family: var(--f-body); font-weight: 700; font-size: 34px; vertical-align: 15px; }
+.band .nacht { font-size: 11px; color: color-mix(in srgb, var(--licht) 80%, transparent); margin-top: 5px; }
+.band .kans { font-size: 13px; font-weight: 700; color: var(--licht); }
+.band .conditie { font-family: var(--f-pix); font-weight: 900; font-size: 10px; color: var(--accent2); margin-top: 8px; letter-spacing: 0.5px; }
 
 /* ---------- één meteogram over de volle breedte ---------- */
-.grafieken { grid-template-columns: 1fr; margin-top: 22px; }
+.grafieken { grid-template-columns: 1fr; margin-top: 38px; }
 
-/* ---------- staart: buienregel + dennen-skyline over de volle breedte ---------- */
-.staart { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; position: relative; }
-.staart .buienregel { padding: 0 30px; position: relative; z-index: 2; margin-bottom: -12px; }
+/* ---------- staart: dennen-skyline over de volle breedte ---------- */
+.staart { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; }
 #silhouet { display: block; width: 100%; height: 148px; }
 
 /* de orb als merkteken in plaats van een pixel-glyph */
@@ -81,5 +85,9 @@ footer .glyph { width: 15px; height: 15px; }
   .band .temp { font-size: 58px; }
   .band .nacht, .band .kans { font-size: 13px; }
   .band .conditie { font-size: 10px; }
-  .staart .buienregel { padding: 0 16px; margin-bottom: -6px; }
+  .kop { flex-direction: column; gap: 18px; }
+  .merk { font-size: 40px; }
+  .kop-info { text-align: left; padding: 0; }
+  .kop-info #verdictTekst { margin: 0; max-width: none; }
+  .grafiekkop { flex-direction: column; gap: 4px; }
 }

@@ -17,14 +17,11 @@
     <div class="kop-info">
       <div class="onderwerp">HET WEER</div>
       <div class="regels">VR 4 + ZA 5 SEP<br>MOB-COMPLEX TILBURG<br>ELKE 4 UUR VERS</div>
+      <h1 id="verdictKop"></h1>
+      <p id="verdictTekst"></p>
     </div>
     <div class="hoeksticker"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="#0F231C" stroke-width="3"/></svg></div>
   </header>
-
-  <div class="verdictblok">
-    <h1 id="verdictKop"></h1>
-    <p id="verdictTekst"></p>
-  </div>
 
   <div class="dagen">
     <div id="banden"></div>
@@ -32,13 +29,15 @@
 
   <div class="grafieken">
     <div>
-      <h2>HET VERLOOP: WARMTE EN REGEN</h2>
-      <div class="scrollwrap"><svg id="meteogram" viewBox="0 0 736 170"></svg></div>
+      <div class="grafiekkop">
+        <h2>HET VERLOOP: WARMTE EN REGEN</h2>
+        <span class="buienregel">CHECK OP DE DAG ZELF EVEN BUIENRADAR &gt;</span>
+      </div>
+      <div class="scrollwrap"><svg id="meteogram" viewBox="0 0 736 190"></svg></div>
     </div>
   </div>
 
   <div class="staart">
-    <div class="buienregel">CHECK OP DE DAG ZELF EVEN BUIENRADAR &gt;</div>
     <svg id="silhouet" viewBox="0 0 760 150" preserveAspectRatio="xMidYMax meet"></svg>
   </div>
 
