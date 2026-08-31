@@ -19,7 +19,8 @@ const pngOut = args[2] ? resolve(args[2]) : null;
 const [vw, vh] = (vlag("--viewport") ?? "794x1123").split("x").map(Number);
 const schaal = Number(vlag("--scale") ?? 2);
 
-const browser = await puppeteer.launch({ headless: true, args: ["--no-sandbox", "--disable-setuid-sandbox"] });
+// --force-prefers-reduced-motion: shaders op de pagina renderen één statisch frame
+const browser = await puppeteer.launch({ headless: true, args: ["--no-sandbox", "--disable-setuid-sandbox", "--force-prefers-reduced-motion"] });
 try {
   const page = await browser.newPage();
   await page.setViewport({ width: vw, height: vh, deviceScaleFactor: schaal });
@@ -27,7 +28,17 @@ try {
   await page.evaluate(() => document.fonts.ready);
 
   if (pngOut) {
-    await page.screenshot({ path: pngOut, fullPage: true });
+    // fullPage-captures hangen in deze Chrome; zet het viewport op de
+    // documentgrootte en maak een kale screenshot
+    const doc = await page.evaluate(() => ({
+      w: Math.ceil(document.documentElement.scrollWidth),
+      h: Math.ceil(document.documentElement.scrollHeight),
+    }));
+    if (doc.w > vw || doc.h > vh) {
+      await page.setViewport({ width: Math.max(vw, doc.w), height: Math.max(vh, doc.h), deviceScaleFactor: schaal });
+      await new Promise((ok) => setTimeout(ok, 300));
+    }
+    await page.screenshot({ path: pngOut });
     console.log(`PNG: ${pngOut}`);
   }
 

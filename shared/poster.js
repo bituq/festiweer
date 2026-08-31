@@ -233,7 +233,7 @@ function tekenTemp(svg, geom) {
   const yT = (v) => m.t + (yMax - v) / (yMax - yMin) * (plotH * 0.66);
   for (let t = Math.ceil(yMin / 4) * 4; t <= yMax; t += 4) {
     el(svg, 'line', { x1: m.l, y1: yT(t), x2: W - m.r, y2: yT(t), stroke: ink, opacity: 0.16, 'stroke-width': 1 });
-    el(svg, 'text', { x: m.l - 5, y: yT(t) + 2.5, 'text-anchor': 'end', 'font-size': 7.5, fill: ink, opacity: 0.8 }, t + '°');
+    el(svg, 'text', { x: m.l - 5, y: yT(t) + 2.5, 'text-anchor': 'end', 'font-size': 8, fill: ink, opacity: 0.9 }, t + '°');
   }
   el(svg, 'line', { x1: m.l, y1: base, x2: W - m.r, y2: base, stroke: ink, opacity: 0.45, 'stroke-width': 1 });
 
@@ -244,7 +244,7 @@ function tekenTemp(svg, geom) {
   D.days.forEach((dg, d) => {
     const i0 = d * 24, i1 = Math.min(N - 1, i0 + 23);
     if (i0 >= N) return;
-    el(svg, 'text', { x: x((i0 + i1) / 2), y: H - 6, 'text-anchor': 'middle', 'font-family': FLABEL, 'font-weight': 700, 'font-size': 7.5, fill: ink, opacity: 0.85 }, dg);
+    el(svg, 'text', { x: x((i0 + i1) / 2), y: H - 6, 'text-anchor': 'middle', 'font-family': FLABEL, 'font-weight': 700, 'font-size': 8.5, fill: ink, opacity: 0.95 }, dg);
   });
 
   // regen als 3-uursblokjes vanaf de basislijn, met mm-as rechts
@@ -261,9 +261,9 @@ function tekenTemp(svg, geom) {
     el(svg, 'rect', { x: cx - bw / 2, y: yR(v), width: bw, height: base - yR(v), fill: C('--donker') });
   });
   for (let v = 1; v <= regenMax; v += Math.ceil(regenMax / 3)) {
-    el(svg, 'text', { x: W - m.r + 4, y: yR(v) + 2.5, 'font-size': 7, fill: ink, opacity: 0.8 }, `${v}`);
+    el(svg, 'text', { x: W - m.r + 4, y: yR(v) + 2.5, 'font-size': 7.5, fill: ink, opacity: 0.9 }, `${v}`);
   }
-  el(svg, 'text', { x: W - m.r + 4, y: yR(regenMax) - 7, 'font-size': 6.5, fill: ink, opacity: 0.7 }, 'mm');
+  el(svg, 'text', { x: W - m.r + 4, y: yR(regenMax) - 7, 'font-size': 7, fill: ink, opacity: 0.85 }, 'mm');
 
   // temperatuurband + mediaan
   let d = 'M' + U.temp.hi.map((v, i) => `${x(i)},${yT(v)}`).join(' L');
@@ -273,9 +273,9 @@ function tekenTemp(svg, geom) {
 
   // legenda linksboven
   el(svg, 'line', { x1: m.l + 4, y1: m.t + 4, x2: m.l + 18, y2: m.t + 4, stroke: C('--signaal'), 'stroke-width': 2 });
-  el(svg, 'text', { x: m.l + 23, y: m.t + 7, 'font-family': FLABEL, 'font-weight': 700, 'font-size': 7, fill: ink, opacity: 0.85 }, 'TEMPERATUUR, MET DE BAND WAAR VRIJWEL ALLE BEREKENINGEN TUSSEN ZITTEN');
-  el(svg, 'rect', { x: m.l + 6, y: m.t + 12, width: 10, height: 6, fill: C('--donker') });
-  el(svg, 'text', { x: m.l + 23, y: m.t + 18, 'font-family': FLABEL, 'font-weight': 700, 'font-size': 7, fill: ink, opacity: 0.85 }, 'REGEN (MM PER 3 UUR)');
+  el(svg, 'text', { x: m.l + 23, y: m.t + 7, 'font-family': FLABEL, 'font-weight': 700, 'font-size': 7.5, fill: ink, opacity: 0.95 }, 'TEMPERATUUR + ONZEKERHEIDSBAND');
+  el(svg, 'rect', { x: m.l + 6, y: m.t + 13, width: 10, height: 6, fill: C('--donker') });
+  el(svg, 'text', { x: m.l + 23, y: m.t + 19, 'font-family': FLABEL, 'font-weight': 700, 'font-size': 7.5, fill: ink, opacity: 0.95 }, 'REGEN (MM PER 3 UUR)');
 })();
 
 /* ---------- meteogram (per dag): fallback zonder uurdata ---------- */
