@@ -1,5 +1,3 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-  <circle cx="12.6" cy="12.9" r="7.5" fill="#17251D" opacity="0.28"/>
   <circle cx="12" cy="12" r="7.5" fill="#E2AF43"/>
-  <circle cx="12" cy="12" r="7.5" fill="none" stroke="#17251D" stroke-opacity="0.3" stroke-width="0.8"/>
 </svg>

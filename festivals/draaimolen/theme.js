@@ -75,7 +75,6 @@ window.FESTIVAL = {
     let wrap = null;
     try {
       if (this.__orbCanvas) return true;
-      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
       const cv = document.createElement('canvas');
       const gl = cv.getContext('webgl', { alpha: true, premultipliedAlpha: true, preserveDrawingBuffer: true });
       if (!gl) return false;
@@ -93,16 +92,19 @@ void main(){
   uv.y = -uv.y; // beeldruimte: y omlaag, zoals de texture
   float r = length(uv);
   float z = sqrt(max(0.0, 1.0 - r * r));
-  // vloeibaar glas: de normaal wiebelt traag, het sterkst aan de rand
-  float w1 = noise(uv * 2.6 + t * 0.12) - 0.5;
-  float w2 = noise(uv * 3.4 - t * 0.09 + 7.3) - 0.5;
-  vec3 n = normalize(vec3(uv + vec2(w1, w2) * 0.07 * (1.0 - z), max(z, 0.03)));
+  // vloeibaar glas: de normaal golft, het sterkst aan de rand
+  float w1 = noise(uv * 2.6 + t * 0.35) - 0.5;
+  float w2 = noise(uv * 3.4 - t * 0.28 + 7.3) - 0.5;
+  vec3 n = normalize(vec3(uv + vec2(w1, w2) * 0.10 * (1.0 - z), max(z, 0.03)));
   vec3 kijk = vec3(0.0, 0.0, -1.0);
+  // de gebroken wereld draait langzaam rond in de bol (het is een draaimolen)
+  float rot = t * 0.12;
+  mat2 R = mat2(cos(rot), -sin(rot), sin(rot), cos(rot));
   // refractie per kanaal: de bol keert de wereld om, elk kanaal breekt net anders
   vec3 kleur;
   for (int k = 0; k < 3; k++) {
     vec3 br = refract(kijk, n, 0.60 + float(k) * 0.025);
-    vec2 suv = -uv * (0.62 - 0.30 * z) + br.xy * 0.42;
+    vec2 suv = R * (-uv * (0.62 - 0.30 * z)) + br.xy * 0.42;
     vec2 co = clamp(vec2(0.5) + suv * 0.5, 0.01, 0.99);
     vec4 s = texture2D(wereld, co);
     kleur[k] = k == 0 ? s.r : (k == 1 ? s.g : s.b);
@@ -113,9 +115,12 @@ void main(){
   vec3 refl = texture2D(wereld, rco).rgb;
   float fres = pow(1.0 - z, 3.0);
   kleur = mix(kleur, refl, fres * 0.65);
-  // glasrand en spotje linksboven
+  // dunne-film regenboogrand die langzaam verloopt
+  float fase = 3.0 * (1.0 - z) + t * 0.15;
+  kleur += fres * 0.16 * vec3(0.5 + 0.5 * sin(6.2832 * fase), 0.5 + 0.5 * sin(6.2832 * (fase + 0.33)), 0.5 + 0.5 * sin(6.2832 * (fase + 0.67)));
+  // glasrand en een spotje dat langzaam om de bol heen wandelt
   kleur += vec3(0.92, 0.93, 0.89) * fres * 0.3;
-  float spec = pow(max(dot(n, normalize(vec3(-0.45, -0.55, 0.7))), 0.0), 90.0);
+  float spec = pow(max(dot(n, normalize(vec3(-0.45 + 0.25 * sin(t * 0.3), -0.55 + 0.2 * cos(t * 0.23), 0.7))), 0.0), 90.0);
   kleur += vec3(0.95) * spec;
   float alfa = smoothstep(1.0, 0.985, r) * 0.97;
   gl_FragColor = vec4(kleur * alfa, alfa);
@@ -201,11 +206,20 @@ void main(){
       };
       // adaptief: op trage software-WebGL blijft het één statisch frame
       teken(performance.now());
-      const t0 = performance.now();
-      teken(t0);
-      gl.finish();
-      if (performance.now() - t0 < 40) {
-        const lus = (ms) => { teken(ms); requestAnimationFrame(lus); };
+      // beweging alleen bij voorkeur voor beweging; de meting begint pas na
+      // de opwarm-frames zodat de shader-compile niet meetelt
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        let frames = 0, som = 0, vorige = performance.now();
+        const lus = (ms) => {
+          teken(ms);
+          cv.style.transform = `translateY(${(Math.sin(ms / 1700) * 3).toFixed(2)}px)`;
+          if (frames < 16) {
+            if (frames >= 4) som += ms - vorige;
+            vorige = ms; frames++;
+            if (frames === 16 && som / 12 > 40) return; // software-WebGL: statisch frame laten staan
+          }
+          requestAnimationFrame(lus);
+        };
         requestAnimationFrame(lus);
       }
       this.__orbCanvas = cv;
@@ -224,8 +238,6 @@ void main(){
   monteerAchtergrond(pageEl) {
     try {
       if (!pageEl || this.__bgCanvas) return false;
-      // reduced-motion (ook de print-render): de CSS-gradient blijft staan
-      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
       const cv = document.createElement('canvas');
       cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;z-index:-1;';
       const gl = cv.getContext('webgl', { alpha: false, preserveDrawingBuffer: true });
@@ -260,11 +272,11 @@ void main(){
   c = mix(c, vec3(0.882, 0.839, 0.627), ss(0.78, 0.88, v));
   c = mix(c, vec3(0.929, 0.894, 0.714), ss(0.88, 1.00, v));
   // nevel die traag door het middenstuk drijft
-  float nev = fbm(vec2(uv.x * 3.0 + t * 0.010, v * 4.5 - t * 0.004));
+  float nev = fbm(vec2(uv.x * 3.0 + t * 0.035, v * 4.5 - t * 0.014));
   float nevMask = ss(0.24, 0.5, v) * ss(1.0, 0.68, v);
   c = mix(c, vec3(0.84, 0.85, 0.77), nev * nev * 0.22 * nevMask);
   // horizontale goudgele streaks, sterk uitgerekt zoals in het campagnebeeld
-  float st = fbm(vec2(uv.x * 1.3 - t * 0.016, v * 34.0));
+  float st = fbm(vec2(uv.x * 1.3 - t * 0.05, v * 34.0));
   st = ss(0.56, 0.92, st);
   float stMask = ss(0.38, 0.58, v) * ss(0.98, 0.72, v);
   c += vec3(0.91, 0.78, 0.42) * st * 0.10 * stMask;
@@ -308,11 +320,17 @@ void main(){
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       };
       teken(performance.now());
-      const t0 = performance.now();
-      teken(t0);
-      gl.finish();
-      if (performance.now() - t0 < 40) {
-        const lus = (ms) => { teken(ms); requestAnimationFrame(lus); };
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        let frames = 0, som = 0, vorige = performance.now();
+        const lus = (ms) => {
+          teken(ms);
+          if (frames < 16) {
+            if (frames >= 4) som += ms - vorige;
+            vorige = ms; frames++;
+            if (frames === 16 && som / 12 > 40) return; // software-WebGL: statisch frame laten staan
+          }
+          requestAnimationFrame(lus);
+        };
         requestAnimationFrame(lus);
       }
       this.__bgCanvas = cv;
